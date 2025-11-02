@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:padding="@dimen/left_right_margins_16"
+    android:orientation="vertical"
+    >
+    <LinearLayout
+        android:id="@+id/toolbar"
+        android:layout_height="@dimen/settings_item_height"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:padding="@dimen/left_right_margins_16"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_width="match_parent"
+        >
+
+        <Button
+            android:id="@+id/btnBack"
+            app:icon="@drawable/ic_back"
+            app:iconGravity="textStart"
+            app:iconPadding="1dp"
+            app:iconTint="@color/black"
+            style="@style/backButtonStyle"
+            />
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent">
+        <TextView
+            android:id="@+id/settingsTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/settings"
+            android:textColor="@color/black"
+            android:textSize="@dimen/title_text_size"
+            android:textStyle="bold"
+            />
+    </LinearLayout>
+    </LinearLayout>
+    <LinearLayout
+            android:layout_height="@dimen/settings_item_height"
+            android:layout_width="match_parent"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:layout_width="300dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/dark_theme"
+                android:textColor="@color/black"
+                android:textSize="@dimen/button_text_size" />
+
+            <Switch
+                android:id="@+id/themeSwitch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+    </LinearLayout>
+    <LinearLayout
+            android:id="@+id/shareApp"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/settings_item_height"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingVertical="@dimen/small_margin">
+
+            <TextView
+                android:layout_width="300dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/share_app"
+                android:textColor="@color/black"
+                android:textSize="@dimen/button_text_size" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_share"
+                android:tint="@color/gray" />
+    </LinearLayout>
+    <LinearLayout
+            android:id="@+id/userAgreement"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/settings_item_height"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingVertical="@dimen/small_margin">
+
+            <TextView
+                android:layout_width="300dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/user_agreement"
+                android:textColor="@color/black"
+                android:textSize="@dimen/button_text_size" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_arrow_right"
+                android:tint="@color/gray" />
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/contactSupport"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/settings_item_height"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingVertical="@dimen/small_margin">
+
+            <TextView
+                android:layout_width="300dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/support"
+                android:textColor="@color/black"
+                android:textSize="@dimen/button_text_size" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_arrow_right"
+                android:tint="@color/gray" />
+        </LinearLayout>
+    </LinearLayout>
