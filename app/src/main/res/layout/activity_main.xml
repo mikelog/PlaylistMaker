@@ -17,7 +17,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/app_name"
-            android:fontFamily="YS Display"
             android:textSize="24sp"
             android:textStyle="bold"
             android:textColor="@color/white"
@@ -40,7 +39,14 @@
             app:iconPadding="1dp"
             app:iconTint="@color/black"
             app:cornerRadius="16dp"
-            style="@style/mainMenuButtonsStyle"
+            android:padding="0dp"
+            android:backgroundTint="@color/white"
+            android:layout_width="match_parent"
+            android:layout_height="220dp"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            android:layout_weight="1"
+            android:textAllCaps="false"
             />
 
         <Button
@@ -51,7 +57,14 @@
             app:iconPadding="1dp"
             app:iconTint="@color/black"
             app:cornerRadius="16dp"
-            style="@style/mainMenuButtonsStyle"
+            android:padding="0dp"
+            android:backgroundTint="@color/white"
+            android:layout_width="match_parent"
+            android:layout_height="220dp"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            android:layout_weight="1"
+            android:textAllCaps="false"
             />
 
         <Button
@@ -62,7 +75,14 @@
             app:iconPadding="1dp"
             app:iconTint="@color/black"
             app:cornerRadius="16dp"
-            style="@style/mainMenuButtonsStyle"
+            android:padding="0dp"
+            android:backgroundTint="@color/white"
+            android:layout_width="match_parent"
+            android:layout_height="220dp"
+            android:layout_weight="1"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            android:textAllCaps="false"
             />
     </LinearLayout>
 </LinearLayout>
