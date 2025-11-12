@@ -16,11 +16,6 @@
         android:layout_width="match_parent"
         android:gravity="clip_vertical"
         >
-        <LinearLayout
-            android:padding="0dp"
-            android:layout_gravity="center_horizontal"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent">
             <Button
                 android:stateListAnimator="@null"
                 android:layout_width="48dp"
@@ -41,28 +36,18 @@
                 android:textSize="@dimen/title_text_size"
                 android:textStyle="bold" />
         </LinearLayout>
-    </LinearLayout>
     <LinearLayout
         android:layout_marginTop="16dp"
+        android:paddingStart="@dimen/settings_item_text_start"
         android:layout_height="@dimen/settings_item_height"
         android:layout_width="match_parent"
         android:gravity="center_vertical">
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="19dp"
-            android:layout_weight="400"
-            android:text="@string/dark_theme"
-            android:textColor="@color/black"
-            android:textSize="@dimen/settings_item_text_size"
-            android:layout_marginStart="@dimen/settings_item_text_start"
-            android:layout_marginTop="@dimen/settings_item_text_top"
-            android:layout_marginEnd="@dimen/settings_item_text_end"
-            android:layout_marginBottom="@dimen/settings_item_text_bottom"/>
         <Switch
+            android:text="@string/dark_theme"
             android:layout_marginRight="@dimen/settings_item_icon_right"
             android:checked="true"
             android:id="@+id/themeSwitch"
-            android:layout_width="56dp"
+            android:layout_width="match_parent"
             android:layout_height="40dp" />
     </LinearLayout>
     <LinearLayout
