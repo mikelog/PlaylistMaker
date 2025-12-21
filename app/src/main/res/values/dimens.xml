@@ -16,11 +16,11 @@
     <dimen name="checkbox_size">20dp</dimen>
     <dimen name="left_right_margins_16">16dp</dimen>
     <dimen name="settings_title_height">56dp</dimen>
-    <dimen name="settings_item_height">61dp</dimen>
-    <dimen name="settings_item_text_size">16dp</dimen>
+    <dimen name="settings_item_height">62dp</dimen>
+    <dimen name="text_size_16">16dp</dimen>
     <dimen name="settings_item_text_start">16dp</dimen>
     <dimen name="settings_item_text_end">44dp</dimen>
-    <dimen name="settings_item_text_top">21dp</dimen>
-    <dimen name="settings_item_text_bottom">21dp</dimen>
+    <dimen name="settings_item_text_top">22dp</dimen>
+    <dimen name="settings_item_text_bottom">22dp</dimen>
     <dimen name="settings_item_icon_right">12dp</dimen>
 </resources>
