@@ -14,6 +14,11 @@ import com.example.playlistmaker.R
 class SearchActivity : AppCompatActivity() {
 
     private lateinit var searchEditText: EditText
+    private var searchQuery: String = ""
+
+    companion object {
+        private const val SEARCH_QUERY_KEY = "SEARCH_QUERY_KEY"
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -21,14 +26,15 @@ class SearchActivity : AppCompatActivity() {
         val btnBack: Button = findViewById(R.id.btnBack)
         searchEditText = findViewById(R.id.searchEditText)
 
-        initSearchField()
         btnBack.setOnClickListener {
             finish()
         }
-    }
 
-    private fun initSearchField() {
+        initSearch()
+    }
+    private fun initSearch() {
         updateClearIcon(null)
+
         searchEditText.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(
                 s: CharSequence?,
@@ -43,11 +49,12 @@ class SearchActivity : AppCompatActivity() {
                 before: Int,
                 count: Int
             ) {
+                searchQuery = s?.toString().orEmpty()
                 updateClearIcon(s)
             }
 
             override fun afterTextChanged(s: Editable?) {
-                // TODO: реализация поиска в следующих заданиях
+                // TODO: логика поиска будет добавлена позже
             }
         })
 
@@ -55,7 +62,6 @@ class SearchActivity : AppCompatActivity() {
             if (event.action == MotionEvent.ACTION_UP) {
                 val drawableEnd = searchEditText.compoundDrawables[2]
                 if (drawableEnd != null) {
-
                     val clearIconStart =
                         searchEditText.width -
                                 searchEditText.paddingEnd -
@@ -71,6 +77,19 @@ class SearchActivity : AppCompatActivity() {
             false
         }
     }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putString(SEARCH_QUERY_KEY, searchQuery)
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+        val restoredQuery = savedInstanceState.getString(SEARCH_QUERY_KEY).orEmpty()
+        searchEditText.setText(restoredQuery)
+        searchEditText.setSelection(restoredQuery.length)
+    }
+
 
     private fun updateClearIcon(text: CharSequence?) {
         val searchIcon = getDrawable(R.drawable.ic_search)
