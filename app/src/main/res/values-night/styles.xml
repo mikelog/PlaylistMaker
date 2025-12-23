@@ -9,14 +9,14 @@
         <item name="android:paddingTop">16dp</item>
         <item name="android:gravity">center</item>
         <item name="android:backgroundTint">@color/white</item>
-        <item name="android:textColor">@color/black</item>
+        <item name="android:textColor">@color/yp_black</item>
         <item name="android:textSize">22sp</item>
         <item name="android:textAllCaps">false</item>
         <item name="android:textStyle">bold</item>
         <item name="iconGravity">textStart</item>
         <item name="iconPadding">8dp</item>
         <item name="cornerRadius">16dp</item>
-        <item name="iconTint">@color/black</item>
+        <item name="iconTint">@color/yp_black</item>
         <item name="android:layout_weight">1</item>
         <item name="android:fontFamily">@font/ys_display_medium</item>
     </style>
@@ -43,7 +43,7 @@
     <style name="backButtonStyle">
         <item name="android:minHeight">48dp</item>
         <item name="android:minWidth">48dp</item>
-        <item name="android:backgroundTint">@color/black</item>
+        <item name="android:backgroundTint">@color/yp_black</item>
         <item name="android:layout_width">48dp</item>
         <item name="android:layout_height">48dp</item>
 
@@ -55,7 +55,7 @@
 
     </style>
     <style name="ItemsSettingsLayoutStyle">
-        <item name="android:color">@color/black</item>
+        <item name="android:color">@color/yp_black</item>
         <item name="android:layout_height">@dimen/settings_item_height</item>
         <item name="android:layout_width">match_parent</item>
         <item name="android:gravity">center_vertical</item>

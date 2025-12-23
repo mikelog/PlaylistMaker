@@ -22,7 +22,7 @@
                 app:cornerRadius="0dp"
                 android:backgroundTint="?attr/colorOnPrimary"
                 android:id="@+id/btnBack"
-                app:icon="@drawable/ic_back"
+                app:icon="@drawable/ic_arrow_back_24"
                 app:iconGravity="textStart"
                 app:iconTint="?attr/colorOnSecondary"
                 />
@@ -56,7 +56,7 @@
                 android:text="@string/share_app"
                 style="@style/SettingsItemsStyle"/>
             <ImageView
-                android:src="@drawable/ic_share"
+                android:src="@drawable/ic_share_24"
                 style="@style/ImageItemsSettingsStyle"/>
     </LinearLayout>
     <LinearLayout
@@ -66,7 +66,7 @@
             android:text="@string/support"
             style="@style/SettingsItemsStyle"/>
         <ImageView
-            android:src="@drawable/ic_support"
+            android:src="@drawable/ic_support_24"
             style="@style/ImageItemsSettingsStyle"/>
     </LinearLayout>
     <LinearLayout
@@ -76,7 +76,7 @@
                 android:text="@string/user_agreement"
                 style="@style/SettingsItemsStyle"/>
             <ImageView
-                android:src="@drawable/ic_arrow_right"
+                android:src="@drawable/ic_arrow_right_24"
                 style="@style/ImageItemsSettingsStyle"/>
     </LinearLayout>
 

@@ -6,4 +6,6 @@
     <color name="divider">#E0E0E0</color>
     <color name="gray">#808080</color>
     <color name="teal_200">#FF03DAC5</color>
+    <color name="yp_black">#1A1B22</color>
+    <color name="search_hint">#1A1B22</color>
 </resources>

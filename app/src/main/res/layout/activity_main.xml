@@ -32,20 +32,20 @@
         <Button
             android:text="@string/search"
             android:id="@+id/btnSearch"
-            app:icon="@drawable/ic_search"
+            app:icon="@drawable/ic_search_24"
             style="@style/mainMenuButtonsStyle"/>
 
         <Button
             android:id="@+id/btnMedia"
             android:text="@string/library"
-            app:icon="@drawable/ic_media"
+            app:icon="@drawable/ic_media_24"
             style="@style/mainMenuButtonsStyle"
             />
 
         <Button
             android:id="@+id/btnSettings"
             android:text="@string/settings"
-            app:icon="@drawable/ic_settings"
+            app:icon="@drawable/ic_settings_24"
             style="@style/mainMenuButtonsStyle"
             />
     </LinearLayout>

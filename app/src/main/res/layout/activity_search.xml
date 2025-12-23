@@ -22,7 +22,7 @@
             app:cornerRadius="0dp"
             android:backgroundTint="?attr/colorOnPrimary"
             android:id="@+id/btnBack"
-            app:icon="@drawable/ic_back"
+            app:icon="@drawable/ic_arrow_back_24"
             app:iconGravity="textStart"
             app:iconTint="?attr/colorOnSecondary"
             />
@@ -54,8 +54,8 @@
             android:inputType="text"
             android:textColor="@android:color/black"
             android:textSize="@dimen/text_size_16"
-            android:textColorHint="#9E9E9E"
-            android:drawableStart="@drawable/ic_search"
+            android:textColorHint="?attr/search_hint"
+            android:drawableStart="@drawable/ic_search_24"
             android:drawablePadding="12dp"
             android:textCursorDrawable="@drawable/custom_cursor"/>
     </LinearLayout>
