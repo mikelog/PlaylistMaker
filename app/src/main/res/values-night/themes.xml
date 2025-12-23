@@ -4,7 +4,6 @@
         <item name="colorPrimary">@color/yp_black</item>
         <item name="colorPrimaryVariant">@color/yp_black</item>
         <item name="colorOnSecondary">@color/white</item>
-        <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
         <item name="search_hint">@color/search_hint</item>
     </style>
 </resources>

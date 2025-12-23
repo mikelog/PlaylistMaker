@@ -9,7 +9,9 @@
     <dimen name="button_spacing">16dp</dimen>
     <dimen name="bottom_margin">28dp</dimen>
     <dimen name="divider_height">2dp</dimen>
-    <dimen name="title_margin_bottom">10dp</dimen>
+    <dimen name="title_margin_top">14dp</dimen>
+    <dimen name="title_margin_bottom">16dp</dimen>
+    <dimen name="title_margin_left">16dp</dimen>
     <dimen name="subtitle_margin_bottom">24dp</dimen>
     <dimen name="section_margin_bottom">20dp</dimen>
     <dimen name="button_corner_radius">12dp</dimen>
