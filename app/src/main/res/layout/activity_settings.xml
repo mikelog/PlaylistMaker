@@ -8,13 +8,6 @@
     android:orientation="vertical"
     android:id="@+id/settings"
     >
-
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="colorOnSecondary" />
-
     <LinearLayout
         android:id="@+id/toolbar"
         android:padding="4dp"
