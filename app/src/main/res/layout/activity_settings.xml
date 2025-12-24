@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
+    android:background="?attr/colorOnPrimary"
     android:orientation="vertical"
     android:id="@+id/settings"
     >
@@ -14,117 +14,70 @@
         android:layout_height="@dimen/settings_title_height"
         android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:gravity="clip_vertical"
-        >
+        android:gravity="clip_vertical">
             <Button
                 android:stateListAnimator="@null"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
                 app:cornerRadius="0dp"
-                android:backgroundTint="@color/white"
+                android:backgroundTint="?attr/colorOnPrimary"
                 android:id="@+id/btnBack"
-                app:icon="@drawable/ic_back"
+                app:icon="@drawable/ic_arrow_back_24"
                 app:iconGravity="textStart"
-                app:iconTint="@color/black"
+                app:iconTint="?attr/colorOnSecondary"
                 />
             <TextView
                 android:layout_gravity="center"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
                 android:text="@string/settings"
-                android:textColor="@color/black"
-                android:textSize="@dimen/title_text_size"
-                android:textStyle="bold" />
-        </LinearLayout>
+                android:textColor="?attr/colorOnSecondary"
+                style="@style/MessageTextStyle"
+                />
+    </LinearLayout>
     <LinearLayout
         android:layout_marginTop="16dp"
         android:paddingStart="@dimen/settings_item_text_start"
-        android:layout_height="@dimen/settings_item_height"
-        android:layout_width="match_parent"
-        android:gravity="center_vertical">
+        android:color="@color/white"
+        style="@style/ItemsSettingsLayoutStyle">
         <Switch
             android:text="@string/dark_theme"
             android:layout_marginRight="@dimen/settings_item_icon_right"
             android:checked="true"
             android:id="@+id/themeSwitch"
             android:layout_width="match_parent"
-            android:layout_height="40dp" />
+            android:layout_height="40dp"
+            android:textSize="@dimen/text_size_16"
+            android:fontFamily="@font/ys_display_regular"
+            />
     </LinearLayout>
-    <LinearLayout
+     <LinearLayout
             android:id="@+id/shareApp"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/settings_item_height"
-            android:gravity="center_vertical">
+            style="@style/ItemsSettingsLayoutStyle">
             <TextView
-                android:layout_width="0dp"
-                android:layout_height="19dp"
-                android:layout_weight="400"
                 android:text="@string/share_app"
-                android:textColor="@color/black"
-                android:textSize="@dimen/settings_item_text_size"
-                android:layout_marginStart="@dimen/settings_item_text_start"
-                android:layout_marginTop="@dimen/settings_item_text_top"
-                android:layout_marginEnd="@dimen/settings_item_text_end"
-                android:layout_marginBottom="@dimen/settings_item_text_bottom"
-                />
-
+                style="@style/SettingsItemsStyle"/>
             <ImageView
-                android:layout_marginRight="@dimen/settings_item_icon_right"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_share"
-                app:tint="@color/gray" />
+                android:src="@drawable/ic_share_24"
+                style="@style/ImageItemsSettingsStyle"/>
     </LinearLayout>
     <LinearLayout
         android:id="@+id/contactSupport"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/settings_item_height"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        >
-
+        style="@style/ItemsSettingsLayoutStyle">
         <TextView
-            android:layout_width="0dp"
-            android:layout_height="19dp"
-            android:layout_weight="400"
             android:text="@string/support"
-            android:textColor="@color/black"
-            android:textSize="@dimen/button_text_size"
-            android:layout_marginStart="@dimen/settings_item_text_start"
-            android:layout_marginTop="@dimen/settings_item_text_top"
-            android:layout_marginEnd="@dimen/settings_item_text_end"
-            android:layout_marginBottom="@dimen/settings_item_text_bottom"/>
-
+            style="@style/SettingsItemsStyle"/>
         <ImageView
-            android:layout_marginRight="@dimen/settings_item_icon_right"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_support"
-            app:tint="@color/gray" />
+            android:src="@drawable/ic_support_24"
+            style="@style/ImageItemsSettingsStyle"/>
     </LinearLayout>
     <LinearLayout
             android:id="@+id/userAgreement"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/settings_item_height"
-            android:gravity="center_vertical">
+            style="@style/ItemsSettingsLayoutStyle">
             <TextView
-                android:layout_width="0dp"
-                android:layout_weight="400"
-                android:layout_height="wrap_content"
                 android:text="@string/user_agreement"
-                android:textColor="@color/black"
-                android:textSize="@dimen/settings_item_text_size"
-                android:layout_marginStart="@dimen/settings_item_text_start"
-                android:layout_marginTop="@dimen/settings_item_text_top"
-                android:layout_marginEnd="@dimen/settings_item_text_end"
-                android:layout_marginBottom="@dimen/settings_item_text_bottom"/>
-
+                style="@style/SettingsItemsStyle"/>
             <ImageView
-                android:layout_marginRight="@dimen/settings_item_icon_right"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_arrow_right"
-                app:tint="@color/gray" />
-        </LinearLayout>
+                android:src="@drawable/ic_arrow_right_24"
+                style="@style/ImageItemsSettingsStyle"/>
+    </LinearLayout>
 
     </LinearLayout>
