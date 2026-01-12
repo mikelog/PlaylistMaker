@@ -17,6 +17,7 @@
     <dimen name="button_corner_radius">12dp</dimen>
     <dimen name="checkbox_size">20dp</dimen>
     <dimen name="left_right_margins_16">16dp</dimen>
+    <dimen name="marginStart_13">13dp</dimen>
     <dimen name="settings_title_height">56dp</dimen>
     <dimen name="settings_item_height">62dp</dimen>
     <dimen name="text_size_16">16dp</dimen>
