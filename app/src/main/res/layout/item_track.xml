@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="62dp"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="horizontal"
     android:gravity="center_vertical">
 
@@ -43,7 +44,7 @@
                 android:id="@+id/artistName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Artist Name"
+                tools:text="Artist Name"
                 android:textSize="11sp"
                 android:fontFamily="@font/ys_display_regular"
                 android:textColor="?attr/yp_gray_color"
@@ -59,7 +60,7 @@
                 android:id="@+id/trackTime"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="4:05"
+                tools:text="4:05"
                 android:textSize="11sp"
                 android:fontFamily="@font/ys_display_regular"
                 android:textColor="?attr/yp_gray_color" />
@@ -70,6 +71,7 @@
         android:layout_width="24dp"
         android:layout_height="24dp"
         android:src="@drawable/ic_arrow_right_24"
-        app:tint="?attr/yp_gray_color" />
+        app:tint="?attr/yp_gray_color"
+        android:layout_marginRight="@dimen/settings_item_icon_right"/>
 
 </LinearLayout>

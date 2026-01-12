@@ -20,7 +20,7 @@ class SearchActivity : AppCompatActivity() {
 
     private var searchQuery: String = ""
 
-    private val allTracks = arrayListOf(
+    private val allTracks: List<Track> = listOf(
         Track(
             "Smells Like Teen Spirit",
             "Nirvana",

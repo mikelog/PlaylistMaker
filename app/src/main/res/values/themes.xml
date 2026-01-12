@@ -6,6 +6,7 @@
         <item name="colorPrimaryVariant">@color/blue_background</item>
         <item name="colorOnSecondary">@color/black</item>
         <item name="yp_gray_color">@color/yp_gray</item>
+        <item name="search_hint_color">@color/yp_gray</item>
         <item name="colorOnPrimary">@color/white</item>
     </style>
 </resources>

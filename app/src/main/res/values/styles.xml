@@ -64,7 +64,7 @@
         <item name="android:gravity">center_vertical</item>
     </style>
     <style name="RoundedArtwork">
-        <item name="cornerSize">8dp</item>
+        <item name="cornerSize">2dp</item>
     </style>
 
 </resources>
