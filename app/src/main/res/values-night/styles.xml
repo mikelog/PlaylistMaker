@@ -61,4 +61,7 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:gravity">center_vertical</item>
     </style>
+    <style name="RoundedArtwork">
+        <item name="cornerSize">2dp</item>
+    </style>
 </resources>
