@@ -24,5 +24,6 @@ class TrackViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
             .error(R.drawable.track_art_placeholder)
             .centerCrop()
             .into(artwork)
+
     }
 }

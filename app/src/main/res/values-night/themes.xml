@@ -7,5 +7,6 @@
         <item name="yp_gray_color">@color/white</item>
         <item name="search_hint_color">@color/yp_black</item>
         <item name="colorOnPrimary">@color/yp_black</item>
+        <item name="materialButtonStyle">@style/Widget.PlaylistMaker.Button</item>
     </style>
 </resources>
