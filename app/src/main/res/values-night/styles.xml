@@ -64,4 +64,10 @@
     <style name="RoundedArtwork">
         <item name="cornerSize">2dp</item>
     </style>
+    <style name="Widget.PlaylistMaker.Button" parent="Widget.MaterialComponents.Button">
+        <item name="backgroundTint">@color/white</item>
+        <item name="android:textColor">@color/yp_black</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="cornerRadius">54dp</item>
+    </style>
 </resources>

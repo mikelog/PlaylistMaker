@@ -73,5 +73,4 @@
         android:src="@drawable/ic_arrow_right_24"
         app:tint="?attr/yp_gray_color"
         android:layout_marginRight="@dimen/settings_item_icon_right"/>
-
 </LinearLayout>

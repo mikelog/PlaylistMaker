@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
     android:background="?attr/colorOnPrimary"
     android:orientation="vertical"
-    android:id="@+id/settings"
-    >
+    android:id="@+id/settings">
     <LinearLayout
         android:id="@+id/toolbar"
         android:padding="4dp"
@@ -51,6 +50,7 @@
             android:paddingEnd="16dp"
             android:maxLines="1"
             android:singleLine="true"
+            android:imeOptions="actionDone"
             android:inputType="text"
             android:textColor="@android:color/black"
             android:textSize="@dimen/text_size_16"
@@ -60,12 +60,19 @@
             android:textCursorDrawable="@drawable/custom_cursor"/>
 
     </LinearLayout>
+    <LinearLayout
+        android:id="@+id/container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/searchRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
         android:paddingBottom="8dp"
-        android:clipToPadding="false" />
+        android:clipToPadding="false"/>
+    </LinearLayout>
+
 
 </LinearLayout>
