@@ -15,7 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import retrofit2.*
 import retrofit2.converter.gson.GsonConverterFactory
-
+const val BASE_URL = "https://itunes.apple.com"
 
 class SearchActivity : AppCompatActivity() {
 
@@ -32,7 +32,7 @@ class SearchActivity : AppCompatActivity() {
         setContentView(R.layout.activity_search)
 
         val retrofit = Retrofit.Builder()
-            .baseUrl("https://itunes.apple.com")
+            .baseUrl(BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
 
@@ -110,7 +110,7 @@ class SearchActivity : AppCompatActivity() {
                 if (response.isSuccessful) {
 
                     val tracks = response.body()?.results
-                        ?.map { it.toTrack() }
+                        ?.mapNotNull { it.toTrack() }
                         ?: emptyList()
 
                     if (tracks.isEmpty()) {

@@ -21,12 +21,6 @@ class TrackAdapter(
 
     private var state: State = State.DATA
 
-    companion object {
-        private const val VIEW_TYPE_TRACK = 1
-        private const val VIEW_TYPE_EMPTY = 0
-        private const val VIEW_TYPE_NO_CONNECTION = 2
-    }
-
     override fun getItemViewType(position: Int): Int {
         return when (state) {
             State.DATA -> VIEW_TYPE_TRACK
@@ -95,4 +89,10 @@ class TrackAdapter(
     }
 
     class PlaceholderViewHolder(view: View) : RecyclerView.ViewHolder(view)
+
+    companion object {
+        private const val VIEW_TYPE_TRACK = 1
+        private const val VIEW_TYPE_EMPTY = 0
+        private const val VIEW_TYPE_NO_CONNECTION = 2
+    }
 }
