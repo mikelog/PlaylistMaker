@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 class TrackAdapter(
     private val tracks: MutableList<Track>
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-
+    var onTrackClick: ((Track) -> Unit)? = null
     var onRetryClick: (() -> Unit)? = null
 
     enum class State {
@@ -53,11 +53,16 @@ class TrackAdapter(
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         if (holder is TrackViewHolder && state == State.DATA) {
-            holder.bind(tracks[position])
-        } else if (holder is PlaceholderViewHolder && state == State.NO_CONNECTION) {
-            holder.itemView.findViewById<Button>(R.id.buttonRetry)?.setOnClickListener {
-                onRetryClick?.invoke()
+            val track = tracks[position]
+            holder.bind(track)
+
+            holder.itemView.setOnClickListener {
+                onTrackClick?.invoke(track)
             }
+
+        } else if (holder is PlaceholderViewHolder && state == State.NO_CONNECTION) {
+            holder.itemView.findViewById<Button>(R.id.buttonRetry)
+                ?.setOnClickListener { onRetryClick?.invoke() }
         }
     }
 
