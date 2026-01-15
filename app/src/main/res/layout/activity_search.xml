@@ -83,7 +83,6 @@
             android:layout_marginTop="24dp"
             android:layout_marginStart="16dp"
             android:visibility="gone"/>
-        <!-- RecyclerView истории -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/historyRecyclerView"
             android:layout_width="match_parent"
@@ -92,8 +91,6 @@
             android:layout_marginTop="8dp"
             android:visibility="gone"
             android:clipToPadding="false"/>
-
-        <!-- Кнопка очистки -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/clearHistoryButton"
             android:layout_width="wrap_content"
