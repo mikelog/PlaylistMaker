@@ -4,15 +4,19 @@ import ItunesApi
 import android.content.Context
 import android.os.Bundle
 import android.view.MotionEvent
+import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
+import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.widget.doOnTextChanged
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.gson.Gson
 import retrofit2.*
 import retrofit2.converter.gson.GsonConverterFactory
 const val BASE_URL = "https://itunes.apple.com"
@@ -22,6 +26,14 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var searchEditText: EditText
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: TrackAdapter
+    private lateinit var historyRepository: SearchHistoryRepository
+
+    private lateinit var historyTitle: TextView
+    private lateinit var historyRecycler: RecyclerView
+    private lateinit var clearHistoryButton: Button
+    private lateinit var historyAdapter: TrackAdapter
+    private  lateinit var containerSearchHistory: LinearLayout
+
 
     private lateinit var api: ItunesApi
 
@@ -42,11 +54,32 @@ class SearchActivity : AppCompatActivity() {
         searchEditText = findViewById(R.id.searchEditText)
         recyclerView = findViewById(R.id.searchRecyclerView)
 
+        historyTitle = findViewById(R.id.historyTitle)
+        historyRecycler = findViewById(R.id.historyRecyclerView)
+        clearHistoryButton = findViewById(R.id.clearHistoryButton)
+        containerSearchHistory = findViewById(R.id.containerSearchHistory)
+
+        setupHistoryRecycler()
+
+        historyRepository = SearchHistoryRepositoryImpl(
+            getSharedPreferences("playlist_prefs", MODE_PRIVATE),
+            Gson()
+        )
+
+
 
         btnBack.setOnClickListener { finish() }
 
         setupRecyclerView()
         initSearch()
+
+        clearHistoryButton.setOnClickListener {
+            historyRepository.clearHistory()
+            historyTitle.visibility = View.GONE
+            historyRecycler.visibility = View.GONE
+            clearHistoryButton.visibility = View.GONE
+            containerSearchHistory.visibility = View.GONE
+        }
     }
 
     private fun setupRecyclerView() {
@@ -58,6 +91,10 @@ class SearchActivity : AppCompatActivity() {
             if (lastQuery.isNotBlank()) {
                 performSearch(lastQuery)
             }
+        }
+        adapter.onTrackClick = { track ->
+            historyRepository.addTrack(track)
+            // В следующем спринте тут будет переход в плеер
         }
     }
 
@@ -72,10 +109,20 @@ class SearchActivity : AppCompatActivity() {
                 true
             } else false
         }
+        searchEditText.setOnFocusChangeListener { _, hasFocus ->
+            if (hasFocus && searchEditText.text.isEmpty()) {
+                showHistory()
+            }
+        }
 
         // Отображение иконки очистки
         searchEditText.doOnTextChanged { text, _, _, _ ->
             updateClearIcon(text)
+            if (!text.isNullOrEmpty()) {
+                historyTitle.visibility = View.GONE
+                historyRecycler.visibility = View.GONE
+                clearHistoryButton.visibility = View.GONE
+            }
         }
 
         // Нажатие на крестик очистки
@@ -160,6 +207,29 @@ class SearchActivity : AppCompatActivity() {
         lastQuery = restoredQuery
         if (restoredQuery.isNotBlank()) {
             performSearch(restoredQuery)
+        }
+    }
+
+    private fun showHistory() {
+        val history = historyRepository.getHistory()
+
+        if (history.isNotEmpty()) {
+            historyAdapter.updateData(history)
+            historyTitle.visibility = View.VISIBLE
+            historyRecycler.visibility = View.VISIBLE
+            clearHistoryButton.visibility = View.VISIBLE
+            containerSearchHistory.visibility = View.VISIBLE
+        }
+    }
+
+    private fun setupHistoryRecycler() {
+        historyAdapter = TrackAdapter(mutableListOf())
+        historyRecycler.layoutManager = LinearLayoutManager(this)
+        historyRecycler.adapter = historyAdapter
+
+        historyAdapter.onTrackClick = { track ->
+            historyRepository.addTrack(track)
+            // позже переход в плеер
         }
     }
 

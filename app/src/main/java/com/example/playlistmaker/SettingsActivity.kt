@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import android.widget.LinearLayout
+import com.google.android.material.switchmaterial.SwitchMaterial
 
 class SettingsActivity : AppCompatActivity() {
 
@@ -17,6 +18,7 @@ class SettingsActivity : AppCompatActivity() {
         val shareAppLayout: LinearLayout = findViewById(R.id.shareApp)
         val supportLayout: LinearLayout = findViewById(R.id.contactSupport)
         val userAgreementLayout: LinearLayout = findViewById(R.id.userAgreement)
+        val themeSwitcher = findViewById<SwitchMaterial>(R.id.themeSwitcher)
 
         btnBack.setOnClickListener {
             finish()
@@ -33,6 +35,12 @@ class SettingsActivity : AppCompatActivity() {
         userAgreementLayout.setOnClickListener {
             openUserAgreement()
         }
+
+        themeSwitcher.setOnCheckedChangeListener { switcher, checked ->
+            (applicationContext as App).switchTheme(checked)
+        }
+
+        themeSwitcher.isChecked = (application as App).darkTheme
     }
 
 

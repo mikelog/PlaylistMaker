@@ -38,11 +38,11 @@
         android:paddingStart="@dimen/settings_item_text_start"
         android:color="@color/white"
         style="@style/ItemsSettingsLayoutStyle">
-        <Switch
+        <com.google.android.material.switchmaterial.SwitchMaterial
             android:text="@string/dark_theme"
             android:layout_marginRight="@dimen/settings_item_icon_right"
             android:checked="true"
-            android:id="@+id/themeSwitch"
+            android:id="@+id/themeSwitcher"
             android:layout_width="match_parent"
             android:layout_height="40dp"
             android:textSize="@dimen/text_size_16"
