@@ -13,12 +13,9 @@ class SearchHistoryRepositoryImpl(
         private const val MAX_HISTORY_SIZE = 10
     }
 
-    override fun getHistory(): MutableList<Track> {
-        val json: String? = sharedPreferences.getString(HISTORY_KEY, null)
-        if (json.isNullOrEmpty()) return mutableListOf<Track>()
-
-        val tracks: Array<Track> = gson.fromJson(json, Array<Track>::class.java)
-        return tracks.toMutableList()
+    override fun getHistory(): List<Track> {
+        val json = sharedPreferences.getString(HISTORY_KEY, null) ?: return emptyList()
+        return gson.fromJson(json, Array<Track>::class.java).toList()
     }
 
     override fun addTrack(track: Track) {
