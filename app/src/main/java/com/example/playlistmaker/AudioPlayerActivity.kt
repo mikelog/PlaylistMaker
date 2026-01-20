@@ -2,14 +2,10 @@ package com.example.playlistmaker
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Button
-import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
-import com.example.playlistmaker.R
-import com.example.playlistmaker.Track
 import com.google.android.material.button.MaterialButton
 
 class AudioPlayerActivity : AppCompatActivity() {
@@ -57,8 +53,8 @@ class AudioPlayerActivity : AppCompatActivity() {
 
         Glide.with(this)
             .load(track.getCoverArtwork())
-            .placeholder(R.drawable.track_art_placeholder)
-            .error(R.drawable.track_art_placeholder)
+            .placeholder(R.drawable.placeholder_album)
+            .error(R.drawable.placeholder_album)
             .centerCrop()
             .into(albumArt)
     }
