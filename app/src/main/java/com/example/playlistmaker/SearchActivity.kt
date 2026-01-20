@@ -2,6 +2,7 @@ package com.example.playlistmaker
 
 import ItunesApi
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.view.MotionEvent
 import android.view.View
@@ -19,6 +20,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
 import retrofit2.*
 import retrofit2.converter.gson.GsonConverterFactory
+
 const val BASE_URL = "https://itunes.apple.com"
 
 class SearchActivity : AppCompatActivity() {
@@ -94,7 +96,7 @@ class SearchActivity : AppCompatActivity() {
         }
         adapter.onTrackClick = { track ->
             historyRepository.addTrack(track)
-            // В следующем спринте тут будет переход в плеер
+            openAudioPlayer(track)
         }
     }
 
@@ -221,6 +223,20 @@ class SearchActivity : AppCompatActivity() {
             containerSearchHistory.visibility = View.VISIBLE
         }
     }
+    private fun openAudioPlayer(track: Track) {
+        val intent = Intent(this, AudioPlayerActivity::class.java)
+        intent.putExtra("trackId", track.trackId)
+        intent.putExtra("trackName", track.trackName)
+        intent.putExtra("artistName", track.artistName)
+        intent.putExtra("trackTime", track.trackTime)
+        intent.putExtra("artworkUrl100", track.artworkUrl100)
+        intent.putExtra("collectionName", track.collectionName)
+        intent.putExtra("releaseDate", track.releaseDate)
+        intent.putExtra("primaryGenreName", track.primaryGenreName)
+        intent.putExtra("country", track.country)
+        startActivity(intent)
+    }
+
 
     private fun setupHistoryRecycler() {
         historyAdapter = TrackAdapter(mutableListOf())
@@ -229,7 +245,7 @@ class SearchActivity : AppCompatActivity() {
 
         historyAdapter.onTrackClick = { track ->
             historyRepository.addTrack(track)
-            // позже переход в плеер
+            openAudioPlayer(track)
         }
     }
 
