@@ -42,7 +42,7 @@ class AudioPlayerActivity : AppCompatActivity() {
         btnBack.setOnClickListener { finish() }
 
         // Получаем Track
-        val track = intent.getParcelableExtra<Track>("track")
+        val track = intent.getParcelableExtra<Track>(EXTRA_TRACK)
         track?.let { bindTrack(it) }
     }
 
@@ -64,9 +64,11 @@ class AudioPlayerActivity : AppCompatActivity() {
     }
 
     companion object {
+        private const val EXTRA_TRACK = "com.example.playlistmaker.EXTRA_TRACK"
+
         fun start(activity: AppCompatActivity, track: Track) {
             val intent = Intent(activity, AudioPlayerActivity::class.java)
-            intent.putExtra("track", track)
+            intent.putExtra(EXTRA_TRACK, track)
             activity.startActivity(intent)
         }
     }
