@@ -86,7 +86,7 @@
         <item name="android:textSize">@dimen/text_size_13</item>
         <item name="android:textColor">?attr/colorOnSecondary</item>
         <item name="android:layout_marginStart">@dimen/margin_16</item>
-        <item name="android:layout_marginTop">@dimen/margin_9</item>
+        <item name="android:layout_marginTop">@dimen/margin_16</item>
         <item name="android:layout_marginEnd">@dimen/margin_16</item>
     </style>
 </resources>

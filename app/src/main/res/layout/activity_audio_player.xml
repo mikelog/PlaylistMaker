@@ -29,8 +29,8 @@
         <!-- Обложка -->
         <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/albumArt"
-            android:layout_width="312dp"
-            android:layout_height="312dp"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
             android:scaleType="centerCrop"
             app:layout_constraintTop_toBottomOf="@id/btnBack"
             app:layout_constraintStart_toStartOf="parent"
@@ -70,47 +70,47 @@
             tools:text="artistName"/>
 
         <!-- Панель управления -->
-        <LinearLayout
-            android:id="@+id/playerControlButtons"
-            android:orientation="horizontal"
-            android:gravity="center"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/artistName"
-            android:layout_marginTop="16dp">
-
             <ImageButton
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@id/artistName"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
+                android:layout_marginStart="@dimen/margin_24"
+                android:layout_marginTop="@dimen/margin_54"
                 android:id="@+id/buttonAddPlaylist"
                 android:src="@drawable/ic_playlist_add_50"
                 android:background="@null"/>
-
             <ImageButton
+                app:layout_constraintStart_toEndOf="@id/buttonAddPlaylist"
+                app:layout_constraintTop_toTopOf="@id/artistName"
+                app:layout_constraintEnd_toStartOf="@+id/buttonFavorite"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
                 android:id="@+id/buttonPlay"
                 android:src="@drawable/ic_play_100"
                 android:background="@null"
-                android:layout_marginHorizontal="24dp"/>
-
+                android:layout_marginStart="@dimen/margin_56"
+                android:layout_marginEnd="@dimen/margin_56"
+                android:layout_marginTop="@dimen/margin_30"/>
             <ImageButton
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/artistName"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:id="@+id/buttonFavorite"
                 android:src="@drawable/ic_favorite_50"
+                android:layout_marginEnd="@dimen/margin_24"
+                android:layout_marginTop="@dimen/margin_54"
                 android:background="@null"/>
-        </LinearLayout>
-
         <!-- Прогресс -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/textProgress"
-            app:layout_constraintTop_toBottomOf="@id/playerControlButtons"
+            app:layout_constraintTop_toBottomOf="@id/buttonPlay"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="4dp"
             android:text="00:00"
             />
         <!-- Продолжительность -->
@@ -139,7 +139,6 @@
             android:layout_height="wrap_content"
             android:text="@string/track_album"
             style="@style/TextViewPlayerTrackInfoFieldsStyle"
-            android:layout_marginTop="@dimen/margin_9"
             app:layout_constraintTop_toBottomOf="@id/trackTimeField"
             app:layout_constraintStart_toStartOf="parent"/>
         <TextView
@@ -149,14 +148,12 @@
             android:layout_height="wrap_content"
             tools:text="здесь будет название альбома"
             style="@style/TextViewPlayerTrackInfoValuesStyle"
-            android:layout_marginTop="@dimen/margin_9"
             app:layout_constraintTop_toBottomOf="@id/trackTime"
             app:layout_constraintStart_toEndOf="@id/collectionNameField"
             app:layout_constraintEnd_toEndOf="parent"/>
 
         <!-- Год релиза -->
         <TextView
-            android:layout_marginTop="@dimen/margin_9"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/releaseDateField"
@@ -165,7 +162,6 @@
             style="@style/TextViewPlayerTrackInfoFieldsStyle"
             android:text="@string/track_release_date"/>
         <TextView
-            android:layout_marginTop="@dimen/margin_9"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/releaseDate"
@@ -176,7 +172,6 @@
 
         <!-- Жанр -->
         <TextView
-            android:layout_marginTop="@dimen/margin_9"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/primaryGenreNameField"
@@ -185,7 +180,6 @@
             android:text="@string/track_genre"
             style="@style/TextViewPlayerTrackInfoFieldsStyle"/>
         <TextView
-            android:layout_marginTop="@dimen/margin_9"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/primaryGenreName"
@@ -196,7 +190,6 @@
 
         <!-- Страна -->
         <TextView
-            android:layout_marginTop="@dimen/margin_9"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/countryField"
@@ -204,18 +197,16 @@
             app:layout_constraintStart_toStartOf="parent"
             style="@style/TextViewPlayerTrackInfoFieldsStyle"
             android:text="@string/track_cuntry"
-            />
+            android:layout_marginBottom="20dp"/>
         <TextView
-            android:layout_marginTop="@dimen/margin_9"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/country"
             app:layout_constraintTop_toBottomOf="@id/primaryGenreName"
             app:layout_constraintEnd_toEndOf="parent"
-            style="@style/TextViewPlayerTrackInfoValuesStyle"/>
-
-
-
+            app:layout_constraintBottom_toBottomOf="parent"
+            style="@style/TextViewPlayerTrackInfoValuesStyle"
+            android:layout_marginBottom="20dp"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.core.widget.NestedScrollView>
