@@ -96,7 +96,9 @@ class SearchActivity : AppCompatActivity() {
         }
         adapter.onTrackClick = { track ->
             historyRepository.addTrack(track)
-            openAudioPlayer(track)
+            val intent = Intent(this, AudioPlayerActivity::class.java)
+            AudioPlayerActivity.start(this, track)
+            startActivity(intent)
         }
     }
 
@@ -223,20 +225,6 @@ class SearchActivity : AppCompatActivity() {
             containerSearchHistory.visibility = View.VISIBLE
         }
     }
-    private fun openAudioPlayer(track: Track) {
-        val intent = Intent(this, AudioPlayerActivity::class.java)
-        intent.putExtra("trackId", track.trackId)
-        intent.putExtra("trackName", track.trackName)
-        intent.putExtra("artistName", track.artistName)
-        intent.putExtra("trackTime", track.trackTime)
-        intent.putExtra("artworkUrl100", track.artworkUrl100)
-        intent.putExtra("collectionName", track.collectionName)
-        intent.putExtra("releaseDate", track.releaseDate)
-        intent.putExtra("primaryGenreName", track.primaryGenreName)
-        intent.putExtra("country", track.country)
-        startActivity(intent)
-    }
-
 
     private fun setupHistoryRecycler() {
         historyAdapter = TrackAdapter(mutableListOf())
@@ -245,7 +233,9 @@ class SearchActivity : AppCompatActivity() {
 
         historyAdapter.onTrackClick = { track ->
             historyRepository.addTrack(track)
-            openAudioPlayer(track)
+            val intent = Intent(this, AudioPlayerActivity::class.java)
+            intent.putExtra("track", track)
+            startActivity(intent)
         }
     }
 

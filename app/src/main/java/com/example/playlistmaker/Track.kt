@@ -1,8 +1,10 @@
 package com.example.playlistmaker
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeParseException
-
+@Parcelize
 data class Track(
     val trackId: Long,
     val trackName: String,
@@ -13,7 +15,7 @@ data class Track(
     val releaseDate: String,         // дата релиза
     val primaryGenreName: String,     // жанр
     val country: String
-){
+): Parcelable {
     fun getCoverArtwork() = artworkUrl100.replaceAfterLast('/',"512x512bb.jpg")
     fun getReleaseYear(): String {
         return try {
