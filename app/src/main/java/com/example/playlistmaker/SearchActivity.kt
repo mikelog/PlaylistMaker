@@ -2,6 +2,7 @@ package com.example.playlistmaker
 
 import ItunesApi
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.view.MotionEvent
 import android.view.View
@@ -19,6 +20,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
 import retrofit2.*
 import retrofit2.converter.gson.GsonConverterFactory
+
 const val BASE_URL = "https://itunes.apple.com"
 
 class SearchActivity : AppCompatActivity() {
@@ -94,7 +96,7 @@ class SearchActivity : AppCompatActivity() {
         }
         adapter.onTrackClick = { track ->
             historyRepository.addTrack(track)
-            // В следующем спринте тут будет переход в плеер
+            AudioPlayerActivity.start(this, track)
         }
     }
 
@@ -229,7 +231,7 @@ class SearchActivity : AppCompatActivity() {
 
         historyAdapter.onTrackClick = { track ->
             historyRepository.addTrack(track)
-            // позже переход в плеер
+            AudioPlayerActivity.start(this, track)
         }
     }
 
