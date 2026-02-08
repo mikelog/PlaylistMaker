@@ -15,6 +15,7 @@ fun TrackDto.toTrack(): Track? {
     val primaryGenreName = primaryGenreName ?: return null
     val country = country ?: return null
     val artworkUrl100 = artworkUrl100 ?: return null
+    val previewUrl = previewUrl ?: return null
 
     return Track(
         trackId = trackId,
@@ -25,6 +26,7 @@ fun TrackDto.toTrack(): Track? {
         collectionName = collectionName,
         releaseDate = releaseDate,
         primaryGenreName = primaryGenreName,
-        country =  country
+        country =  country,
+        previewUrl = previewUrl
     )
 }
