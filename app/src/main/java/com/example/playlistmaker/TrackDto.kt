@@ -9,6 +9,7 @@ data class TrackDto(
     val collectionName: String?,      // альбом
     val releaseDate: String?,         // дата релиза
     val primaryGenreName: String,     // жанр
-    val country: String?
+    val country: String?,
+    val previewUrl: String?
 )
 

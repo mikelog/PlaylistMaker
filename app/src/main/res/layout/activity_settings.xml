@@ -6,15 +6,14 @@
     android:layout_height="match_parent"
     android:background="?attr/colorOnPrimary"
     android:orientation="vertical"
-    android:id="@+id/settings"
-    >
+    android:id="@+id/settingsRoot">
     <LinearLayout
-        android:id="@+id/toolbar"
-        android:padding="4dp"
-        android:layout_height="@dimen/settings_title_height"
-        android:orientation="horizontal"
+        android:id="@+id/settingsToolbar"
         android:layout_width="match_parent"
-        android:gravity="clip_vertical">
+        android:layout_height="wrap_content"
+        android:minHeight="@dimen/settings_title_height"
+        android:padding="4dp"
+        android:orientation="horizontal">
             <Button
                 android:stateListAnimator="@null"
                 android:layout_width="48dp"
