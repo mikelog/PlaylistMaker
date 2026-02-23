@@ -1,30 +1,30 @@
-package com.example.playlistmaker
+package com.example.playlistmaker.domain.interactor
 
 import android.media.MediaPlayer
 import android.os.Handler
 import android.os.Looper
 
-// MediaPlayerController.kt — реализация
-class MediaPlayerController : PlayerController {
+class PlayerInteractorImpl : PlayerInteractor {
 
-    override var state: PlayerController.State = PlayerController.State.DEFAULT
+    override var state: PlayerInteractor.State = PlayerInteractor.State.DEFAULT
         private set
 
     private var mediaPlayer: MediaPlayer? = null
     private val handler = Handler(Looper.getMainLooper())
+
+    private var onStateChange: ((PlayerInteractor.State) -> Unit)? = null
+    private var onProgressUpdate: ((Int) -> Unit)? = null
+
     private val updateRunnable = object : Runnable {
         override fun run() {
-            if (state == PlayerController.State.PLAYING) {
+            if (state == PlayerInteractor.State.PLAYING) {
                 mediaPlayer?.currentPosition?.let { onProgressUpdate?.invoke(it) }
                 handler.postDelayed(this, 300L)
             }
         }
     }
 
-    private var onStateChange: ((PlayerController.State) -> Unit)? = null
-    private var onProgressUpdate: ((Int) -> Unit)? = null
-
-    override fun setOnStateChangeListener(listener: (PlayerController.State) -> Unit) {
+    override fun setOnStateChangeListener(listener: (PlayerInteractor.State) -> Unit) {
         onStateChange = listener
     }
 
@@ -34,20 +34,19 @@ class MediaPlayerController : PlayerController {
 
     override fun prepare(url: String?) {
         if (url.isNullOrBlank()) {
-            state = PlayerController.State.DEFAULT
+            state = PlayerInteractor.State.DEFAULT
             onStateChange?.invoke(state)
             return
         }
-
         mediaPlayer = MediaPlayer().apply {
             setDataSource(url)
             prepareAsync()
             setOnPreparedListener {
-                state = PlayerController.State.PREPARED
+                state = PlayerInteractor.State.PREPARED
                 onStateChange?.invoke(state)
             }
             setOnCompletionListener {
-                state = PlayerController.State.PREPARED
+                state = PlayerInteractor.State.PREPARED
                 onStateChange?.invoke(state)
                 handler.removeCallbacks(updateRunnable)
             }
@@ -55,18 +54,18 @@ class MediaPlayerController : PlayerController {
     }
 
     override fun play() {
-        if (state == PlayerController.State.PREPARED || state == PlayerController.State.PAUSED) {
+        if (state == PlayerInteractor.State.PREPARED || state == PlayerInteractor.State.PAUSED) {
             mediaPlayer?.start()
-            state = PlayerController.State.PLAYING
+            state = PlayerInteractor.State.PLAYING
             onStateChange?.invoke(state)
             handler.post(updateRunnable)
         }
     }
 
     override fun pause() {
-        if (state == PlayerController.State.PLAYING) {
+        if (state == PlayerInteractor.State.PLAYING) {
             mediaPlayer?.pause()
-            state = PlayerController.State.PAUSED
+            state = PlayerInteractor.State.PAUSED
             onStateChange?.invoke(state)
             handler.removeCallbacks(updateRunnable)
         }
@@ -76,7 +75,7 @@ class MediaPlayerController : PlayerController {
         handler.removeCallbacks(updateRunnable)
         mediaPlayer?.release()
         mediaPlayer = null
-        state = PlayerController.State.DEFAULT
+        state = PlayerInteractor.State.DEFAULT
         onStateChange?.invoke(state)
     }
 }

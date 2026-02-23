@@ -1,4 +1,4 @@
-package com.example.playlistmaker
+package com.example.playlistmaker.presentation.audioplayer
 
 import android.content.Intent
 import android.os.Bundle
@@ -7,9 +7,13 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
+import com.example.playlistmaker.R
+import com.example.playlistmaker.domain.interactor.PlayerInteractor
+import com.example.playlistmaker.domain.models.Track
+import com.example.playlistmaker.util.Creator
 import com.google.android.material.button.MaterialButton
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Locale
 
 class AudioPlayerActivity : AppCompatActivity() {
 
@@ -25,7 +29,7 @@ class AudioPlayerActivity : AppCompatActivity() {
     private lateinit var btnBack: MaterialButton
     private lateinit var buttonPlay: ImageButton
 
-    private lateinit var player: PlayerController
+    private lateinit var player: PlayerInteractor
 
     companion object {
         private const val EXTRA_TRACK = "com.example.playlistmaker.EXTRA_TRACK"
@@ -41,7 +45,6 @@ class AudioPlayerActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_audio_player)
 
-        // Инициализация UI
         btnBack = findViewById(R.id.btnBack)
         albumArt = findViewById(R.id.albumArt)
         trackName = findViewById(R.id.trackName)
@@ -56,21 +59,23 @@ class AudioPlayerActivity : AppCompatActivity() {
 
         btnBack.setOnClickListener { finish() }
 
-        // Инициализация PlayerController
-        player = MediaPlayerController()
+        // Получаем интерактор через Creator
+        player = Creator.providePlayerInteractor()
+
         player.setOnStateChangeListener { state ->
             when (state) {
-                PlayerController.State.PLAYING -> buttonPlay.setImageResource(R.drawable.ic_pause_100)
-                else -> buttonPlay.setImageResource(R.drawable.ic_play_100)
+                PlayerInteractor.State.PLAYING ->
+                    buttonPlay.setImageResource(R.drawable.ic_pause_100)
+                else ->
+                    buttonPlay.setImageResource(R.drawable.ic_play_100)
             }
-            buttonPlay.isEnabled = state != PlayerController.State.DEFAULT
+            buttonPlay.isEnabled = state != PlayerInteractor.State.DEFAULT
             buttonPlay.alpha = if (buttonPlay.isEnabled) 1f else 0.5f
         }
         player.setOnProgressUpdateListener { ms ->
             textProgress.text = SimpleDateFormat("mm:ss", Locale.getDefault()).format(ms)
         }
 
-        // Получаем Track из intent
         val track = intent.getParcelableExtra(EXTRA_TRACK, Track::class.java)
         track?.let {
             bindTrack(it)
@@ -79,8 +84,9 @@ class AudioPlayerActivity : AppCompatActivity() {
 
         buttonPlay.setOnClickListener {
             when (player.state) {
-                PlayerController.State.PLAYING -> player.pause()
-                PlayerController.State.PREPARED, PlayerController.State.PAUSED -> player.play()
+                PlayerInteractor.State.PLAYING -> player.pause()
+                PlayerInteractor.State.PREPARED,
+                PlayerInteractor.State.PAUSED -> player.play()
                 else -> {}
             }
         }
@@ -89,10 +95,10 @@ class AudioPlayerActivity : AppCompatActivity() {
     private fun bindTrack(track: Track) {
         trackName.text = track.trackName
         artistName.text = track.artistName
-        collectionName.text = track.collectionName ?: ""
+        collectionName.text = track.collectionName
         releaseDate.text = track.getReleaseYear()
-        primaryGenreName.text = track.primaryGenreName ?: ""
-        country.text = track.country ?: ""
+        primaryGenreName.text = track.primaryGenreName
+        country.text = track.country
         trackTime.text = track.trackTime
 
         Glide.with(this)
