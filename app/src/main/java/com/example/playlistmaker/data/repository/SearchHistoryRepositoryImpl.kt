@@ -1,6 +1,8 @@
-package com.example.playlistmaker
+package com.example.playlistmaker.data.repository
 
 import android.content.SharedPreferences
+import com.example.playlistmaker.domain.models.Track
+import com.example.playlistmaker.domain.repository.SearchHistoryRepository
 import com.google.gson.Gson
 
 class SearchHistoryRepositoryImpl(
@@ -33,7 +35,6 @@ class SearchHistoryRepositoryImpl(
     }
 
     private fun save(history: List<Track>) {
-        val json = gson.toJson(history)
-        sharedPreferences.edit().putString(HISTORY_KEY, json).apply()
+        sharedPreferences.edit().putString(HISTORY_KEY, gson.toJson(history)).apply()
     }
 }

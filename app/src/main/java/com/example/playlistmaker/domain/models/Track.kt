@@ -1,4 +1,5 @@
-package com.example.playlistmaker
+//Track.kt
+package com.example.playlistmaker.domain.models
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 import java.time.Instant
