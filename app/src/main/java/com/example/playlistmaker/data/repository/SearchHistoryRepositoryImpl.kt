@@ -1,6 +1,9 @@
 package com.example.playlistmaker.data.repository
 
 import android.content.SharedPreferences
+import com.example.playlistmaker.data.dto.TrackHistoryDto
+import com.example.playlistmaker.data.mapper.toHistoryDto
+import com.example.playlistmaker.data.mapper.toTrack
 import com.example.playlistmaker.domain.models.Track
 import com.example.playlistmaker.domain.repository.SearchHistoryRepository
 import com.google.gson.Gson
@@ -17,7 +20,9 @@ class SearchHistoryRepositoryImpl(
 
     override fun getHistory(): List<Track> {
         val json = sharedPreferences.getString(HISTORY_KEY, null) ?: return emptyList()
-        return gson.fromJson(json, Array<Track>::class.java).toList()
+        // Читаем как список DTO, затем маппим в доменные модели
+        return gson.fromJson(json, Array<TrackHistoryDto>::class.java)
+            .mapNotNull { it.toTrack() }
     }
 
     override fun addTrack(track: Track) {
@@ -35,6 +40,8 @@ class SearchHistoryRepositoryImpl(
     }
 
     private fun save(history: List<Track>) {
-        sharedPreferences.edit().putString(HISTORY_KEY, gson.toJson(history)).apply()
+        // Сохраняем как список DTO, не доменных моделей
+        val dtoList = history.map { it.toHistoryDto() }
+        sharedPreferences.edit().putString(HISTORY_KEY, gson.toJson(dtoList)).apply()
     }
 }
