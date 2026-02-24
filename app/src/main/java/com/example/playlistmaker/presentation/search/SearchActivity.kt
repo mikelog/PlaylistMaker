@@ -10,6 +10,7 @@ import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
@@ -34,6 +35,7 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var historyTitle: TextView
     private lateinit var historyRecycler: RecyclerView
     private lateinit var clearHistoryButton: Button
+    private lateinit var clearEditSearchButton: ImageButton
     private lateinit var historyAdapter: TrackAdapter
     private lateinit var containerSearchHistory: LinearLayout
     private lateinit var progressBar: ProgressBar
@@ -84,6 +86,15 @@ class SearchActivity : AppCompatActivity() {
             historyInteractor.clearHistory()
             hideHistory()
         }
+
+        clearEditSearchButton = findViewById(R.id.clearEditSearchButton)
+
+        clearEditSearchButton.setOnClickListener {
+            searchEditText.text.clear()
+            hideKeyboard()
+            adapter.clearData()
+            showHistory()
+        }
     }
 
     private fun setupRecyclerView() {
@@ -102,7 +113,6 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun initSearch() {
-        updateClearIcon(null)
         searchEditText.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 lastQuery = searchEditText.text.toString()
@@ -117,7 +127,7 @@ class SearchActivity : AppCompatActivity() {
             else if (!hasFocus) hideHistory()
         }
         searchEditText.doOnTextChanged { text, _, _, _ ->
-            updateClearIcon(text)
+            clearEditSearchButton.visibility = if (text.isNullOrEmpty()) View.GONE else View.VISIBLE
             if (!text.isNullOrEmpty()) {
                 hideHistory()
                 lastQuery = text.toString()
@@ -127,24 +137,6 @@ class SearchActivity : AppCompatActivity() {
                 adapter.clearData()
                 if (searchEditText.hasFocus()) showHistory()
             }
-        }
-        searchEditText.setOnTouchListener { _, event ->
-            if (event.action == MotionEvent.ACTION_UP) {
-                val drawableEnd = searchEditText.compoundDrawables[2]
-                if (drawableEnd != null) {
-                    val clearIconStart = searchEditText.width -
-                            searchEditText.paddingEnd -
-                            drawableEnd.intrinsicWidth
-                    if (event.x >= clearIconStart) {
-                        searchEditText.text.clear()
-                        hideKeyboard()
-                        adapter.clearData()
-                        showHistory()
-                        return@setOnTouchListener true
-                    }
-                }
-            }
-            false
         }
     }
 
@@ -180,13 +172,6 @@ class SearchActivity : AppCompatActivity() {
                 }
             }
         }
-    }
-
-    private fun updateClearIcon(text: CharSequence?) {
-        val searchIcon = ContextCompat.getDrawable(this, R.drawable.ic_search_16)
-        val clearIcon = if (text.isNullOrEmpty()) null
-        else ContextCompat.getDrawable(this, R.drawable.ic_search_clear_16)
-        searchEditText.setCompoundDrawablesWithIntrinsicBounds(searchIcon, null, clearIcon, null)
     }
 
     private fun hideKeyboard() {

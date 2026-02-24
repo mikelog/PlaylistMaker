@@ -8,10 +8,6 @@ class ThemeRepositoryImpl(
     private val sharedPreferences: SharedPreferences
 ) : ThemeRepository {
 
-    companion object {
-        private const val KEY_DARK_THEME = "darkTheme"
-    }
-
     override fun isDarkTheme(): Boolean {
         return sharedPreferences.getBoolean(KEY_DARK_THEME, false)
     }
@@ -22,5 +18,9 @@ class ThemeRepositoryImpl(
             if (enabled) AppCompatDelegate.MODE_NIGHT_YES
             else AppCompatDelegate.MODE_NIGHT_NO
         )
+    }
+
+    companion object {
+        private const val KEY_DARK_THEME = "darkTheme"
     }
 }
