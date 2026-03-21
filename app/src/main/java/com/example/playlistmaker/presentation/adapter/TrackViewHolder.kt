@@ -1,4 +1,3 @@
-//TrackViewHolder.kt
 package com.example.playlistmaker.presentation.adapter
 
 import android.view.View

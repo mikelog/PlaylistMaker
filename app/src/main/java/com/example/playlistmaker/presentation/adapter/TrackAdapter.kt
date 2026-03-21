@@ -1,4 +1,3 @@
-//TrackAdapter.kt
 package com.example.playlistmaker.presentation.adapter
 
 import android.view.LayoutInflater

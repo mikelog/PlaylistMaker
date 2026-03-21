@@ -6,14 +6,11 @@ import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.example.playlistmaker.R
-import com.example.playlistmaker.domain.interactor.PlayerInteractor
 import com.example.playlistmaker.domain.models.Track
-import com.example.playlistmaker.util.Creator
 import com.google.android.material.button.MaterialButton
-import java.text.SimpleDateFormat
-import java.util.Locale
 
 class AudioPlayerActivity : AppCompatActivity() {
 
@@ -29,7 +26,7 @@ class AudioPlayerActivity : AppCompatActivity() {
     private lateinit var btnBack: MaterialButton
     private lateinit var buttonPlay: ImageButton
 
-    private lateinit var player: PlayerInteractor
+    private lateinit var viewModel: AudioPlayerViewModel
 
     companion object {
         private const val EXTRA_TRACK = "com.example.playlistmaker.EXTRA_TRACK"
@@ -45,6 +42,17 @@ class AudioPlayerActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_audio_player)
 
+        // --- Получаем трек из Intent ---
+        val track = intent.getParcelableExtra(EXTRA_TRACK, Track::class.java)
+            ?: run { finish(); return }
+
+        // --- Инициализация ViewModel через ViewModelProvider ---
+        viewModel = ViewModelProvider(
+            this,
+            AudioPlayerViewModelFactory(track)
+        )[AudioPlayerViewModel::class.java]
+
+        // --- Инициализация Views ---
         btnBack = findViewById(R.id.btnBack)
         albumArt = findViewById(R.id.albumArt)
         trackName = findViewById(R.id.trackName)
@@ -58,37 +66,26 @@ class AudioPlayerActivity : AppCompatActivity() {
         buttonPlay = findViewById(R.id.buttonPlay)
 
         btnBack.setOnClickListener { finish() }
+        buttonPlay.setOnClickListener { viewModel.onPlayPauseClicked() }
 
-        // Получаем интерактор через Creator
-        player = Creator.providePlayerInteractor()
+        // --- Отображаем данные трека (статичные данные — не через LiveData) ---
+        bindTrack(track)
 
-        player.setOnStateChangeListener { state ->
-            when (state) {
-                PlayerInteractor.State.PLAYING ->
-                    buttonPlay.setImageResource(R.drawable.ic_pause_100)
-                else ->
-                    buttonPlay.setImageResource(R.drawable.ic_play_100)
-            }
-            buttonPlay.isEnabled = state != PlayerInteractor.State.DEFAULT
-            buttonPlay.alpha = if (buttonPlay.isEnabled) 1f else 0.5f
-        }
-        player.setOnProgressUpdateListener { ms ->
-            textProgress.text = SimpleDateFormat("mm:ss", Locale.getDefault()).format(ms)
-        }
+        // --- Подписка на LiveData ----
+        observeViewModel()
+    }
 
-        val track = intent.getParcelableExtra(EXTRA_TRACK, Track::class.java)
-        track?.let {
-            bindTrack(it)
-            player.prepare(it.previewUrl)
-        }
-
-        buttonPlay.setOnClickListener {
-            when (player.state) {
-                PlayerInteractor.State.PLAYING -> player.pause()
-                PlayerInteractor.State.PREPARED,
-                PlayerInteractor.State.PAUSED -> player.play()
-                else -> {}
-            }
+    private fun observeViewModel() {
+        viewModel.screenState.observe(this) { state ->
+            // Иконка кнопки Play/Pause
+            buttonPlay.setImageResource(
+                if (state.isPlaying) R.drawable.ic_pause_100 else R.drawable.ic_play_100
+            )
+            // Активность кнопки
+            buttonPlay.isEnabled = state.isPlayEnabled
+            buttonPlay.alpha = if (state.isPlayEnabled) 1f else 0.5f
+            // Прогресс
+            textProgress.text = state.progress
         }
     }
 
@@ -111,11 +108,6 @@ class AudioPlayerActivity : AppCompatActivity() {
 
     override fun onPause() {
         super.onPause()
-        player.pause()
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        player.release()
+        viewModel.onActivityPaused()
     }
 }
