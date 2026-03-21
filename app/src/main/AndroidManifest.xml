@@ -15,7 +15,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.PlaylistMaker">
         <activity
-            android:name=".MainActivity"
+            android:name=".presentation.main.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -23,10 +23,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".SettingsActivity" />
-        <activity android:name=".MediaActivity" />
-        <activity android:name=".SearchActivity" />
-        <activity android:name=".AudioPlayerActivity" />
+        <activity android:name=".presentation.settings.SettingsActivity" />
+        <activity android:name=".presentation.media.MediaActivity" />
+        <activity android:name=".presentation.search.SearchActivity" />
+        <activity android:name=".presentation.audioplayer.AudioPlayerActivity" />
     </application>
 
 </manifest>
