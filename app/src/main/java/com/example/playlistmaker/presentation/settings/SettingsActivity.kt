@@ -1,78 +1,61 @@
 package com.example.playlistmaker.presentation.settings
 
-import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
-import android.view.View
-import android.widget.Button
-import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
 import com.example.playlistmaker.R
-import com.example.playlistmaker.util.applyEdgeToEdge
-import com.example.playlistmaker.domain.interactor.ThemeInteractor
-import com.example.playlistmaker.util.Creator
+import com.example.playlistmaker.creator.Creator
 import com.google.android.material.switchmaterial.SwitchMaterial
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.updatePadding
 
 class SettingsActivity : AppCompatActivity() {
 
-    private lateinit var themeInteractor: ThemeInteractor
+    private lateinit var themeSwitch: SwitchMaterial
+    private lateinit var viewModel: SettingsViewModel
+
+    // Флаг для подавления ложных событий при программной установке switch
+    private var isSwitchInitializing = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
 
-        themeInteractor = Creator.provideThemeInteractor(this)
+        // --- Инициализация ViewModel через ViewModelProvider ---
+        viewModel = ViewModelProvider(
+            this,
+            SettingsViewModelFactory(
+                settingsInteractor = Creator.provideSettingsInteractor(this),
+                sharingInteractor = Creator.provideSharingInteractor(this)
+            )
+        )[SettingsViewModel::class.java]
 
-        val root = findViewById<View>(R.id.settingsRoot)
-        val toolbar = findViewById<View>(R.id.settingsToolbar)
-        applyEdgeToEdge(rootView = root, topView = toolbar)
-        ViewCompat.setOnApplyWindowInsetsListener(root) { _, insets ->
-            val statusBarInsets = insets.getInsets(WindowInsetsCompat.Type.statusBars())
-            toolbar.updatePadding(top = statusBarInsets.top)
-            insets
+        themeSwitch = findViewById(R.id.themeSwitcher)
+
+        // --- Подписка на LiveData ---
+        viewModel.screenState.observe(this) { state ->
+            isSwitchInitializing = true
+            themeSwitch.isChecked = state.isDarkTheme
+            isSwitchInitializing = false
         }
 
-        val btnBack: Button = findViewById(R.id.btnBack)
-        val shareAppLayout: LinearLayout = findViewById(R.id.shareApp)
-        val supportLayout: LinearLayout = findViewById(R.id.contactSupport)
-        val userAgreementLayout: LinearLayout = findViewById(R.id.userAgreement)
-        val themeSwitcher = findViewById<SwitchMaterial>(R.id.themeSwitcher)
-
-        btnBack.setOnClickListener { finish() }
-        shareAppLayout.setOnClickListener { shareApp() }
-        supportLayout.setOnClickListener { writeToSupport() }
-        userAgreementLayout.setOnClickListener { openUserAgreement() }
-
-        // Читаем текущее состояние через интерактор
-        themeSwitcher.isChecked = themeInteractor.isDarkTheme()
-
-        themeSwitcher.setOnCheckedChangeListener { _, checked ->
-            themeInteractor.setDarkTheme(checked)
+        // --- Слушатели ---
+        themeSwitch.setOnCheckedChangeListener { _, isChecked ->
+            if (!isSwitchInitializing) {
+                viewModel.onThemeToggled(isChecked)
+            }
         }
-    }
 
-    private fun shareApp() {
-        val intent = Intent(Intent.ACTION_SEND).apply {
-            type = "text/plain"
-            putExtra(Intent.EXTRA_TEXT, getString(R.string.share_message))
-        }
-        startActivity(Intent.createChooser(intent, null))
-    }
+        findViewById<android.widget.Button>(R.id.btnBack)
+            ?.setOnClickListener { finish() }
 
-    private fun writeToSupport() {
-        val intent = Intent(Intent.ACTION_SENDTO).apply {
-            data = Uri.parse("mailto:")
-            putExtra(Intent.EXTRA_EMAIL, arrayOf(getString(R.string.support_email)))
-            putExtra(Intent.EXTRA_SUBJECT, getString(R.string.support_subject))
-            putExtra(Intent.EXTRA_TEXT, getString(R.string.support_body))
-        }
-        startActivity(intent)
-    }
+        // Кнопки шаринга — LinearLayout-контейнеры из layout
+        // Вся логика делегируется во ViewModel
+        findViewById<android.widget.LinearLayout>(R.id.shareApp)
+            ?.setOnClickListener { viewModel.onShareAppClicked() }
 
-    private fun openUserAgreement() {
-        startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.user_agreement_url))))
+        findViewById<android.widget.LinearLayout>(R.id.contactSupport)
+            ?.setOnClickListener { viewModel.onOpenSupportClicked() }
+
+        findViewById<android.widget.LinearLayout>(R.id.userAgreement)
+            ?.setOnClickListener { viewModel.onOpenTermsClicked() }
     }
 }

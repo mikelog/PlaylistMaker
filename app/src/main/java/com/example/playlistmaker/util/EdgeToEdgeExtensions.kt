@@ -1,4 +1,3 @@
-//EdgeToEdgeExtensions.kt
 package com.example.playlistmaker.util
 
 import android.app.Activity

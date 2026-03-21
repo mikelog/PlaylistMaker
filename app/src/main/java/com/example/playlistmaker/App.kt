@@ -1,13 +1,12 @@
 package com.example.playlistmaker
 
 import android.app.Application
-import com.example.playlistmaker.util.Creator
+import com.example.playlistmaker.creator.Creator
 
 class App : Application() {
     override fun onCreate() {
         super.onCreate()
-        // Восстанавливаем тему при запуске приложения
-        val themeInteractor = Creator.provideThemeInteractor(this)
-        themeInteractor.setDarkTheme(themeInteractor.isDarkTheme())
+        val settingsInteractor = Creator.provideSettingsInteractor(this)
+        settingsInteractor.updateThemeSetting(settingsInteractor.getThemeSettings())
     }
 }
