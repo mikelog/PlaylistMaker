@@ -55,8 +55,6 @@ class SearchActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search)
 
-        // Увеличиваем margin toolbar на высоту статус-бара,
-        // чтобы он не уезжал под него, а сдвигался вниз
         val rootView = findViewById<View>(R.id.searchRoot)
         val toolBar = findViewById<View>(R.id.searchToolbar)
         ViewCompat.setOnApplyWindowInsetsListener(rootView) { view, insets ->
