@@ -24,14 +24,12 @@ class SettingsViewModel(
     val screenState: LiveData<SettingsScreenState> = _screenState
 
     // ---- Тема ----
-
     fun onThemeToggled(enabled: Boolean) {
         settingsInteractor.updateThemeSetting(ThemeSettings(isDarkTheme = enabled))
         _screenState.value = SettingsScreenState(isDarkTheme = enabled)
     }
 
     // ---- Sharing ----
-
     fun onShareAppClicked() {
         sharingInteractor.shareApp()
     }

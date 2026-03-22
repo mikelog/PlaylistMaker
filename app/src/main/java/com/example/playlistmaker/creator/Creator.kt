@@ -1,7 +1,9 @@
 package com.example.playlistmaker.creator
 
 import android.content.Context
+import com.example.playlistmaker.R
 import com.example.playlistmaker.data.network.ItunesApi
+import com.example.playlistmaker.data.player.MediaPlayerInteractorImpl
 import com.example.playlistmaker.data.repository.SearchHistoryRepositoryImpl
 import com.example.playlistmaker.data.repository.TrackRepositoryImpl
 import com.example.playlistmaker.data.settings.ThemeRepositoryImpl
@@ -10,13 +12,16 @@ import com.example.playlistmaker.domain.interactor.SearchHistoryInteractor
 import com.example.playlistmaker.domain.interactor.SearchHistoryInteractorImpl
 import com.example.playlistmaker.domain.interactor.SearchTracksInteractor
 import com.example.playlistmaker.domain.interactor.SearchTracksInteractorImpl
+import com.example.playlistmaker.domain.player.MediaPlayerInteractor
 import com.example.playlistmaker.domain.settings.SettingsInteractor
 import com.example.playlistmaker.domain.settings.impl.SettingsInteractorImpl
 import com.example.playlistmaker.domain.sharing.SharingInteractor
 import com.example.playlistmaker.domain.sharing.impl.SharingInteractorImpl
+import com.example.playlistmaker.domain.sharing.model.EmailData
 import com.google.gson.Gson
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+
 object Creator {
 
     private const val PREFS_SETTINGS = "SETTINGS"
@@ -46,6 +51,12 @@ object Creator {
         return SearchHistoryInteractorImpl(repository)
     }
 
+    // ---- Player ----
+
+    fun provideMediaPlayerInteractor(): MediaPlayerInteractor {
+        return MediaPlayerInteractorImpl()
+    }
+
     // ---- Settings ----
 
     fun provideSettingsInteractor(context: Context): SettingsInteractor {
@@ -58,6 +69,15 @@ object Creator {
 
     fun provideSharingInteractor(context: Context): SharingInteractor {
         val navigator = ExternalNavigatorImpl(context.applicationContext)
-        return SharingInteractorImpl(navigator)
+        return SharingInteractorImpl(
+            externalNavigator = navigator,
+            shareAppLink = context.getString(R.string.share_message),
+            termsLink = context.getString(R.string.user_agreement_url),
+            supportEmailData = EmailData(
+                email = context.getString(R.string.support_email),
+                subject = context.getString(R.string.support_subject),
+                body = context.getString(R.string.support_body)
+            )
+        )
     }
 }

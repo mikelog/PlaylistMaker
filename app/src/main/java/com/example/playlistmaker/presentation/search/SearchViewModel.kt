@@ -16,103 +16,87 @@ class SearchViewModel(
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
-    // ---- State sealed classes ----
-
-    sealed class SearchState {
-        object Idle : SearchState()
-        object Loading : SearchState()
-        data class Content(val tracks: List<Track>) : SearchState()
-        object Empty : SearchState()
-        object NetworkError : SearchState()
-    }
-
-    sealed class HistoryState {
-        object Hidden : HistoryState()
-        data class Visible(val tracks: List<Track>) : HistoryState()
-    }
-
-    // ---- LiveData ----
-
-    private val _searchState = MutableLiveData<SearchState>(SearchState.Idle)
-    val searchState: LiveData<SearchState> = _searchState
-
-    private val _historyState = MutableLiveData<HistoryState>(HistoryState.Hidden)
-    val historyState: LiveData<HistoryState> = _historyState
-
-    // Текущий запрос — хранится в SavedStateHandle, переживает пересоздание Activity
-    private val _currentQuery = savedStateHandle.getLiveData(KEY_QUERY, "")
-    val currentQuery: LiveData<String> = _currentQuery
-
-    // ---- Debounce ----
+    private val _screenState = MutableLiveData(ScreenState())
+    val screenState: LiveData<ScreenState> = _screenState
 
     private val handler = Handler(Looper.getMainLooper())
-    private val searchRunnable = Runnable { performSearch(_currentQuery.value ?: "") }
+    private val searchRunnable = Runnable {
+        performSearch(_screenState.value?.query ?: "")
+    }
 
     companion object {
         private const val SEARCH_DEBOUNCE_DELAY = 2000L
         private const val KEY_QUERY = "search_query"
     }
 
-    // ---- Инициализация: восстанавливаем состояние если был активный запрос ----
-
     init {
         val restoredQuery = savedStateHandle.get<String>(KEY_QUERY).orEmpty()
         if (restoredQuery.isNotBlank()) {
+            _screenState.value = ScreenState(query = restoredQuery)
             performSearch(restoredQuery)
         }
     }
 
-    // ---- Публичные методы ----
-
-    fun onQueryChanged(query: String) {
+    fun onQueryChanged(query: String, fieldHasFocus: Boolean) {
         savedStateHandle[KEY_QUERY] = query
+        val current = _screenState.value ?: ScreenState()
         if (query.isBlank()) {
             handler.removeCallbacks(searchRunnable)
-            _searchState.value = SearchState.Idle
+            _screenState.value = current.copy(
+                query = query,
+                searchContent = SearchContent.Idle,
+                historyTracks = if (fieldHasFocus) getHistoryOrNull() else null
+            )
         } else {
+            _screenState.value = current.copy(
+                query = query,
+                historyTracks = null
+            )
             searchDebounce()
         }
     }
 
-    fun onSearchFocused(hasFocus: Boolean, currentQuery: String) {
-        if (hasFocus && currentQuery.isBlank()) {
-            showHistoryIfNotEmpty()
+    fun onSearchFocused(hasFocus: Boolean) {
+        val current = _screenState.value ?: ScreenState()
+        if (hasFocus && current.query.isBlank()) {
+            _screenState.value = current.copy(historyTracks = getHistoryOrNull())
         } else if (!hasFocus) {
-            _historyState.value = HistoryState.Hidden
+            _screenState.value = current.copy(historyTracks = null)
         }
     }
 
     fun onQueryCleared() {
         handler.removeCallbacks(searchRunnable)
         savedStateHandle[KEY_QUERY] = ""
-        _searchState.value = SearchState.Idle
-        showHistoryIfNotEmpty()
+        _screenState.value = ScreenState(
+            query = "",
+            searchContent = SearchContent.Idle,
+            historyTracks = getHistoryOrNull()
+        )
     }
 
     fun onSearchAction() {
         handler.removeCallbacks(searchRunnable)
-        performSearch(_currentQuery.value ?: "")
+        performSearch(_screenState.value?.query ?: "")
     }
 
     fun onRetry() {
-        val query = _currentQuery.value ?: ""
+        val query = _screenState.value?.query ?: ""
         if (query.isNotBlank()) performSearch(query)
     }
 
     fun onTrackClicked(track: Track) {
         historyInteractor.addTrack(track)
-        val current = _historyState.value
-        if (current is HistoryState.Visible) {
-            _historyState.value = HistoryState.Visible(historyInteractor.getHistory())
+        val current = _screenState.value ?: return
+        if (current.historyTracks != null) {
+            _screenState.value = current.copy(historyTracks = historyInteractor.getHistory())
         }
     }
 
     fun onClearHistory() {
         historyInteractor.clearHistory()
-        _historyState.value = HistoryState.Hidden
+        _screenState.value = (_screenState.value ?: ScreenState()).copy(historyTracks = null)
     }
-
-    // ---- Приватные методы ----
 
     private fun searchDebounce() {
         handler.removeCallbacks(searchRunnable)
@@ -121,27 +105,26 @@ class SearchViewModel(
 
     private fun performSearch(query: String) {
         if (query.isBlank()) return
-        _historyState.value = HistoryState.Hidden
-        _searchState.value = SearchState.Loading
-
+        val current = _screenState.value ?: ScreenState()
+        _screenState.value = current.copy(
+            searchContent = SearchContent.Loading,
+            historyTracks = null
+        )
         searchInteractor.search(query) { tracks, isNetworkError ->
-            _searchState.postValue(
-                when {
-                    isNetworkError -> SearchState.NetworkError
-                    tracks.isNullOrEmpty() -> SearchState.Empty
-                    else -> SearchState.Content(tracks)
-                }
+            val content = when {
+                isNetworkError -> SearchContent.NetworkError
+                tracks.isNullOrEmpty() -> SearchContent.Empty
+                else -> SearchContent.Tracks(tracks)
+            }
+            _screenState.postValue(
+                (_screenState.value ?: ScreenState()).copy(searchContent = content)
             )
         }
     }
 
-    private fun showHistoryIfNotEmpty() {
+    private fun getHistoryOrNull(): List<Track>? {
         val history = historyInteractor.getHistory()
-        _historyState.value = if (history.isNotEmpty()) {
-            HistoryState.Visible(history)
-        } else {
-            HistoryState.Hidden
-        }
+        return history.ifEmpty { null }
     }
 
     override fun onCleared() {
