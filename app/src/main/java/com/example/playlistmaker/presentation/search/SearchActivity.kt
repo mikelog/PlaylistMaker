@@ -20,8 +20,8 @@ import com.example.playlistmaker.R
 import com.example.playlistmaker.creator.Creator
 import com.example.playlistmaker.presentation.adapter.TrackAdapter
 import com.example.playlistmaker.presentation.audioplayer.AudioPlayerActivity
+import com.example.playlistmaker.presentation.search.SearchContent
 import com.example.playlistmaker.util.applyEdgeToEdge
-
 class SearchActivity : AppCompatActivity() {
 
     private lateinit var searchEditText: EditText
@@ -83,70 +83,65 @@ class SearchActivity : AppCompatActivity() {
     }
 
     // ---- Подписка на LiveData ----
-
     private fun observeViewModel() {
-        // Восстанавливаем текст в поле из SavedStateHandle (ViewModel сам хранит запрос)
-        viewModel.currentQuery.observe(this) { query ->
-            if (searchEditText.text.toString() != query) {
+        viewModel.screenState.observe(this) { state ->
+
+            // ---- Текст в поле поиска ----
+            if (searchEditText.text.toString() != state.query) {
                 isRestoringText = true
-                searchEditText.setText(query)
-                searchEditText.setSelection(query.length)
-                isRestoringText = false
+                searchEditText.setText(state.query)
+                searchEditText.setSelection(state.query.length)
+                // Сбрасываем флаг после того как все текстовые watcher-ы отработают
+                searchEditText.post { isRestoringText = false }
             }
             clearEditSearchButton.visibility =
-                if (query.isNullOrEmpty()) View.GONE else View.VISIBLE
-        }
+                if (state.query.isEmpty()) View.GONE else View.VISIBLE
 
-        viewModel.searchState.observe(this) { state ->
-            when (state) {
-                is SearchViewModel.SearchState.Idle -> {
+            // ---- История ----
+            if (state.historyTracks != null) {
+                historyAdapter.updateData(state.historyTracks)
+                containerSearchHistory.visibility = View.VISIBLE
+                historyTitle.visibility = View.VISIBLE
+                historyRecycler.visibility = View.VISIBLE
+                clearHistoryButton.visibility = View.VISIBLE
+            } else {
+                containerSearchHistory.visibility = View.GONE
+                historyTitle.visibility = View.GONE
+                historyRecycler.visibility = View.GONE
+                clearHistoryButton.visibility = View.GONE
+            }
+
+            // ---- Результаты поиска ----
+            when (state.searchContent) {
+                is SearchContent.Idle -> {
                     progressBar.visibility = View.GONE
                     recyclerView.visibility = View.GONE
                     adapter.clearData()
                 }
-                is SearchViewModel.SearchState.Loading -> {
+                is SearchContent.Loading -> {
                     progressBar.visibility = View.VISIBLE
                     recyclerView.visibility = View.GONE
                 }
-                is SearchViewModel.SearchState.Content -> {
+                is SearchContent.Tracks -> {
                     progressBar.visibility = View.GONE
                     recyclerView.visibility = View.VISIBLE
-                    adapter.updateData(state.tracks)
+                    adapter.updateData(state.searchContent.tracks)
                 }
-                is SearchViewModel.SearchState.Empty -> {
+                is SearchContent.Empty -> {
                     progressBar.visibility = View.GONE
                     recyclerView.visibility = View.VISIBLE
                     adapter.updateData(emptyList())
                 }
-                is SearchViewModel.SearchState.NetworkError -> {
+                is SearchContent.NetworkError -> {
                     progressBar.visibility = View.GONE
                     recyclerView.visibility = View.VISIBLE
                     adapter.showNoConnection()
                 }
             }
         }
-
-        viewModel.historyState.observe(this) { state ->
-            when (state) {
-                is SearchViewModel.HistoryState.Hidden -> {
-                    containerSearchHistory.visibility = View.GONE
-                    historyTitle.visibility = View.GONE
-                    historyRecycler.visibility = View.GONE
-                    clearHistoryButton.visibility = View.GONE
-                }
-                is SearchViewModel.HistoryState.Visible -> {
-                    historyAdapter.updateData(state.tracks)
-                    containerSearchHistory.visibility = View.VISIBLE
-                    historyTitle.visibility = View.VISIBLE
-                    historyRecycler.visibility = View.VISIBLE
-                    clearHistoryButton.visibility = View.VISIBLE
-                }
-            }
-        }
     }
 
     // ---- Настройка слушателей ----
-
     private fun setupListeners(btnBack: Button) {
         btnBack.setOnClickListener { finish() }
 
@@ -169,19 +164,21 @@ class SearchActivity : AppCompatActivity() {
         }
 
         searchEditText.setOnFocusChangeListener { _, hasFocus ->
-            viewModel.onSearchFocused(hasFocus, searchEditText.text.toString())
+            viewModel.onSearchFocused(hasFocus)
         }
 
         searchEditText.doOnTextChanged { text, _, _, _ ->
             // Игнорируем изменения, которые мы сами вызвали при восстановлении текста
             if (!isRestoringText) {
-                viewModel.onQueryChanged(text?.toString() ?: "")
+                viewModel.onQueryChanged(
+                    query = text?.toString() ?: "",
+                    fieldHasFocus = searchEditText.hasFocus()
+                )
             }
         }
     }
 
     // ---- RecyclerView ----
-
     private fun setupRecyclerView() {
         adapter = TrackAdapter(mutableListOf())
         recyclerView.layoutManager = LinearLayoutManager(this)
@@ -210,7 +207,6 @@ class SearchActivity : AppCompatActivity() {
     }
 
     // ---- Вспомогательные ----
-
     private fun hideKeyboard() {
         val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(searchEditText.windowToken, 0)
@@ -224,6 +220,14 @@ class SearchActivity : AppCompatActivity() {
             clickHandler.postDelayed(clickDebounceRunnable, CLICK_DEBOUNCE_DELAY)
         }
         return current
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // Сообщаем ViewModel о текущем состоянии фокуса вручную.
+        if (searchEditText.hasFocus()) {
+            viewModel.onSearchFocused(true)
+        }
     }
 
     override fun onDestroy() {

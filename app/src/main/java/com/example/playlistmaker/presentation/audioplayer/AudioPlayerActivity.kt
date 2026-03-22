@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.example.playlistmaker.R
 import com.example.playlistmaker.domain.models.Track
+import com.example.playlistmaker.creator.Creator
 import com.google.android.material.button.MaterialButton
 
 class AudioPlayerActivity : AppCompatActivity() {
@@ -49,7 +50,10 @@ class AudioPlayerActivity : AppCompatActivity() {
         // --- Инициализация ViewModel через ViewModelProvider ---
         viewModel = ViewModelProvider(
             this,
-            AudioPlayerViewModelFactory(track)
+            AudioPlayerViewModelFactory(
+                track = track,
+                playerInteractor = Creator.provideMediaPlayerInteractor()
+            )
         )[AudioPlayerViewModel::class.java]
 
         // --- Инициализация Views ---

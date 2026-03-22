@@ -47,8 +47,6 @@ class SettingsActivity : AppCompatActivity() {
         findViewById<android.widget.Button>(R.id.btnBack)
             ?.setOnClickListener { finish() }
 
-        // Кнопки шаринга — LinearLayout-контейнеры из layout
-        // Вся логика делегируется во ViewModel
         findViewById<android.widget.LinearLayout>(R.id.shareApp)
             ?.setOnClickListener { viewModel.onShareAppClicked() }
 
