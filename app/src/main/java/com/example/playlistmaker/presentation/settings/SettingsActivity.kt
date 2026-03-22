@@ -1,7 +1,11 @@
 package com.example.playlistmaker.presentation.settings
 
 import android.os.Bundle
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import androidx.lifecycle.ViewModelProvider
 import com.example.playlistmaker.R
 import com.example.playlistmaker.creator.Creator
@@ -12,14 +16,26 @@ class SettingsActivity : AppCompatActivity() {
     private lateinit var themeSwitch: SwitchMaterial
     private lateinit var viewModel: SettingsViewModel
 
-    // Флаг для подавления ложных событий при программной установке switch
     private var isSwitchInitializing = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
 
-        // --- Инициализация ViewModel через ViewModelProvider ---
+        // top — на toolbar, bottom — на корень
+        val rootView = findViewById<android.view.View>(R.id.settingsRoot)
+        val toolBar = findViewById<android.view.View>(R.id.settingsToolbar)
+        ViewCompat.setOnApplyWindowInsetsListener(rootView) { view, insets ->
+            val statusBar = insets.getInsets(WindowInsetsCompat.Type.statusBars())
+            val navBar = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
+            val toolbarParams = toolBar.layoutParams as android.widget.LinearLayout.LayoutParams
+            toolbarParams.topMargin = statusBar.top
+            toolBar.layoutParams = toolbarParams
+            view.updatePadding(bottom = navBar.bottom)
+            insets
+        }
+
         viewModel = ViewModelProvider(
             this,
             SettingsViewModelFactory(
@@ -30,14 +46,12 @@ class SettingsActivity : AppCompatActivity() {
 
         themeSwitch = findViewById(R.id.themeSwitcher)
 
-        // --- Подписка на LiveData ---
         viewModel.screenState.observe(this) { state ->
             isSwitchInitializing = true
             themeSwitch.isChecked = state.isDarkTheme
             isSwitchInitializing = false
         }
 
-        // --- Слушатели ---
         themeSwitch.setOnCheckedChangeListener { _, isChecked ->
             if (!isSwitchInitializing) {
                 viewModel.onThemeToggled(isChecked)

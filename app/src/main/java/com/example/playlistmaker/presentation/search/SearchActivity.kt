@@ -11,7 +11,11 @@ import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import androidx.core.widget.doOnTextChanged
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -20,8 +24,7 @@ import com.example.playlistmaker.R
 import com.example.playlistmaker.creator.Creator
 import com.example.playlistmaker.presentation.adapter.TrackAdapter
 import com.example.playlistmaker.presentation.audioplayer.AudioPlayerActivity
-import com.example.playlistmaker.presentation.search.SearchContent
-import com.example.playlistmaker.util.applyEdgeToEdge
+
 class SearchActivity : AppCompatActivity() {
 
     private lateinit var searchEditText: EditText
@@ -37,12 +40,10 @@ class SearchActivity : AppCompatActivity() {
 
     private lateinit var viewModel: SearchViewModel
 
-    // Debounce клика — UI-логика, остаётся в Activity
     private var isClickAllowed = true
     private val clickHandler = android.os.Handler(android.os.Looper.getMainLooper())
     private val clickDebounceRunnable = Runnable { isClickAllowed = true }
 
-    // Флаг: не реагировать на doOnTextChanged пока мы сами программно ставим текст
     private var isRestoringText = false
 
     companion object {
@@ -50,21 +51,30 @@ class SearchActivity : AppCompatActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search)
 
-        // --- Инициализация ViewModel через ViewModelProvider ---
+        // Увеличиваем margin toolbar на высоту статус-бара,
+        // чтобы он не уезжал под него, а сдвигался вниз
+        val rootView = findViewById<View>(R.id.searchRoot)
+        val toolBar = findViewById<View>(R.id.searchToolbar)
+        ViewCompat.setOnApplyWindowInsetsListener(rootView) { view, insets ->
+            val statusBar = insets.getInsets(WindowInsetsCompat.Type.statusBars())
+            val navBar = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
+            val toolbarParams = toolBar.layoutParams as android.widget.LinearLayout.LayoutParams
+            toolbarParams.topMargin = statusBar.top
+            toolBar.layoutParams = toolbarParams
+            view.updatePadding(bottom = navBar.bottom)
+            insets
+        }
+
         val factory = SearchViewModelFactory(
             owner = this,
             searchInteractor = Creator.provideSearchTracksInteractor(),
             historyInteractor = Creator.provideSearchHistoryInteractor(this)
         )
         viewModel = ViewModelProvider(this, factory)[SearchViewModel::class.java]
-
-        // --- Инициализация Views ---
-        val rootView = findViewById<View>(R.id.searchRoot)
-        val toolBar = findViewById<View>(R.id.searchToolbar)
-        applyEdgeToEdge(rootView = rootView, topView = toolBar)
 
         val btnBack: Button = findViewById(R.id.btnBack)
         searchEditText = findViewById(R.id.searchEditText)
@@ -82,22 +92,18 @@ class SearchActivity : AppCompatActivity() {
         observeViewModel()
     }
 
-    // ---- Подписка на LiveData ----
     private fun observeViewModel() {
         viewModel.screenState.observe(this) { state ->
 
-            // ---- Текст в поле поиска ----
             if (searchEditText.text.toString() != state.query) {
                 isRestoringText = true
                 searchEditText.setText(state.query)
                 searchEditText.setSelection(state.query.length)
-                // Сбрасываем флаг после того как все текстовые watcher-ы отработают
                 searchEditText.post { isRestoringText = false }
             }
             clearEditSearchButton.visibility =
                 if (state.query.isEmpty()) View.GONE else View.VISIBLE
 
-            // ---- История ----
             if (state.historyTracks != null) {
                 historyAdapter.updateData(state.historyTracks)
                 containerSearchHistory.visibility = View.VISIBLE
@@ -111,7 +117,6 @@ class SearchActivity : AppCompatActivity() {
                 clearHistoryButton.visibility = View.GONE
             }
 
-            // ---- Результаты поиска ----
             when (state.searchContent) {
                 is SearchContent.Idle -> {
                     progressBar.visibility = View.GONE
@@ -141,7 +146,6 @@ class SearchActivity : AppCompatActivity() {
         }
     }
 
-    // ---- Настройка слушателей ----
     private fun setupListeners(btnBack: Button) {
         btnBack.setOnClickListener { finish() }
 
@@ -168,7 +172,6 @@ class SearchActivity : AppCompatActivity() {
         }
 
         searchEditText.doOnTextChanged { text, _, _, _ ->
-            // Игнорируем изменения, которые мы сами вызвали при восстановлении текста
             if (!isRestoringText) {
                 viewModel.onQueryChanged(
                     query = text?.toString() ?: "",
@@ -178,7 +181,6 @@ class SearchActivity : AppCompatActivity() {
         }
     }
 
-    // ---- RecyclerView ----
     private fun setupRecyclerView() {
         adapter = TrackAdapter(mutableListOf())
         recyclerView.layoutManager = LinearLayoutManager(this)
@@ -206,7 +208,6 @@ class SearchActivity : AppCompatActivity() {
         }
     }
 
-    // ---- Вспомогательные ----
     private fun hideKeyboard() {
         val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(searchEditText.windowToken, 0)
@@ -224,7 +225,6 @@ class SearchActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        // Сообщаем ViewModel о текущем состоянии фокуса вручную.
         if (searchEditText.hasFocus()) {
             viewModel.onSearchFocused(true)
         }

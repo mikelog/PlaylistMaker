@@ -2,16 +2,20 @@ package com.example.playlistmaker.presentation.audioplayer
 
 import android.content.Intent
 import android.os.Bundle
+import android.widget.Button
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.example.playlistmaker.R
-import com.example.playlistmaker.domain.models.Track
 import com.example.playlistmaker.creator.Creator
-import com.google.android.material.button.MaterialButton
+import com.example.playlistmaker.domain.models.Track
 
 class AudioPlayerActivity : AppCompatActivity() {
 
@@ -24,7 +28,7 @@ class AudioPlayerActivity : AppCompatActivity() {
     private lateinit var primaryGenreName: TextView
     private lateinit var trackTime: TextView
     private lateinit var textProgress: TextView
-    private lateinit var btnBack: MaterialButton
+    private lateinit var btnBack: Button
     private lateinit var buttonPlay: ImageButton
 
     private lateinit var viewModel: AudioPlayerViewModel
@@ -40,14 +44,21 @@ class AudioPlayerActivity : AppCompatActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_audio_player)
 
-        // --- Получаем трек из Intent ---
+        // NestedScrollView — отступ сверху, чтобы кнопка «Назад» не уходила под статус-бар
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.audioPlayerRoot)) { view, insets ->
+            val statusBar = insets.getInsets(WindowInsetsCompat.Type.statusBars())
+            val navBar = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
+            view.updatePadding(top = statusBar.top, bottom = navBar.bottom)
+            insets
+        }
+
         val track = intent.getParcelableExtra(EXTRA_TRACK, Track::class.java)
             ?: run { finish(); return }
 
-        // --- Инициализация ViewModel через ViewModelProvider ---
         viewModel = ViewModelProvider(
             this,
             AudioPlayerViewModelFactory(
@@ -56,7 +67,6 @@ class AudioPlayerActivity : AppCompatActivity() {
             )
         )[AudioPlayerViewModel::class.java]
 
-        // --- Инициализация Views ---
         btnBack = findViewById(R.id.btnBack)
         albumArt = findViewById(R.id.albumArt)
         trackName = findViewById(R.id.trackName)
@@ -72,23 +82,17 @@ class AudioPlayerActivity : AppCompatActivity() {
         btnBack.setOnClickListener { finish() }
         buttonPlay.setOnClickListener { viewModel.onPlayPauseClicked() }
 
-        // --- Отображаем данные трека (статичные данные — не через LiveData) ---
         bindTrack(track)
-
-        // --- Подписка на LiveData ----
         observeViewModel()
     }
 
     private fun observeViewModel() {
         viewModel.screenState.observe(this) { state ->
-            // Иконка кнопки Play/Pause
             buttonPlay.setImageResource(
                 if (state.isPlaying) R.drawable.ic_pause_100 else R.drawable.ic_play_100
             )
-            // Активность кнопки
             buttonPlay.isEnabled = state.isPlayEnabled
             buttonPlay.alpha = if (state.isPlayEnabled) 1f else 0.5f
-            // Прогресс
             textProgress.text = state.progress
         }
     }
