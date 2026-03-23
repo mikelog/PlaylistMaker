@@ -1,6 +1,6 @@
 package com.example.playlistmaker.domain.player
 
-interface MediaPlayerInteractor {
+interface MediaPlayerRepository {
     fun prepare(url: String, onPrepared: () -> Unit, onCompletion: () -> Unit)
     fun play()
     fun pause()

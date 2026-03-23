@@ -9,7 +9,7 @@
     <string name="user_agreement">Пользовательское соглашение</string>
     <string name="back">Назад</string>
     <string name="clear">Очистить</string>
-    <string name="share_message">
+    <string name="share_app_url">
         https://practicum.yandex.ru/android-developer/
     </string>
     <string name="support_email">lmi@t-sk.ru</string>

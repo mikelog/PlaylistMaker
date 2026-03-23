@@ -63,7 +63,7 @@ class AudioPlayerActivity : AppCompatActivity() {
             this,
             AudioPlayerViewModelFactory(
                 track = track,
-                playerInteractor = Creator.provideMediaPlayerInteractor()
+                playerRepository = Creator.provideMediaPlayerRepository()
             )
         )[AudioPlayerViewModel::class.java]
 

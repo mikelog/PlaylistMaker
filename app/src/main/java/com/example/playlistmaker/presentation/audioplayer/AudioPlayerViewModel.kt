@@ -6,13 +6,13 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.playlistmaker.domain.models.Track
-import com.example.playlistmaker.domain.player.MediaPlayerInteractor
+import com.example.playlistmaker.domain.player.MediaPlayerRepository
 import java.text.SimpleDateFormat
 import java.util.Locale
 
 class AudioPlayerViewModel(
     private val track: Track,
-    private val playerInteractor: MediaPlayerInteractor
+    private val playerRepository: MediaPlayerRepository
 ) : ViewModel() {
 
     data class PlayerScreenState(
@@ -28,9 +28,9 @@ class AudioPlayerViewModel(
 
     private val updateRunnable = object : Runnable {
         override fun run() {
-            if (playerInteractor.isPlaying()) {
+            if (playerRepository.isPlaying()) {
                 _screenState.value = _screenState.value?.copy(
-                    progress = formatTime(playerInteractor.getCurrentPosition())
+                    progress = formatTime(playerRepository.getCurrentPosition())
                 )
                 handler.postDelayed(this, 300L)
             }
@@ -42,7 +42,7 @@ class AudioPlayerViewModel(
     }
 
     fun onPlayPauseClicked() {
-        if (playerInteractor.isPlaying()) pause() else play()
+        if (playerRepository.isPlaying()) pause() else play()
     }
 
     fun onActivityPaused() {
@@ -55,7 +55,7 @@ class AudioPlayerViewModel(
             _screenState.value = PlayerScreenState(isPlayEnabled = false)
             return
         }
-        playerInteractor.prepare(
+        playerRepository.prepare(
             url = url,
             onPrepared = {
                 _screenState.value = _screenState.value?.copy(isPlayEnabled = true)
@@ -72,13 +72,13 @@ class AudioPlayerViewModel(
     }
 
     private fun play() {
-        playerInteractor.play()
+        playerRepository.play()
         _screenState.value = _screenState.value?.copy(isPlaying = true)
         handler.post(updateRunnable)
     }
 
     private fun pause() {
-        playerInteractor.pause()
+        playerRepository.pause()
         handler.removeCallbacks(updateRunnable)
         _screenState.value = _screenState.value?.copy(isPlaying = false)
     }
@@ -89,6 +89,6 @@ class AudioPlayerViewModel(
     override fun onCleared() {
         super.onCleared()
         handler.removeCallbacks(updateRunnable)
-        playerInteractor.release()
+        playerRepository.release()
     }
 }
