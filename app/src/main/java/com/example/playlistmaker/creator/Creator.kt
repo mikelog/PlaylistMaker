@@ -13,12 +13,14 @@ import com.example.playlistmaker.domain.interactor.SearchHistoryInteractor
 import com.example.playlistmaker.domain.interactor.SearchHistoryInteractorImpl
 import com.example.playlistmaker.domain.interactor.SearchTracksInteractor
 import com.example.playlistmaker.domain.interactor.SearchTracksInteractorImpl
+import com.example.playlistmaker.domain.player.MediaPlayerInteractor
 import com.example.playlistmaker.domain.player.MediaPlayerRepository
 import com.example.playlistmaker.domain.settings.SettingsInteractor
 import com.example.playlistmaker.domain.settings.impl.SettingsInteractorImpl
 import com.example.playlistmaker.domain.sharing.SharingInteractor
 import com.example.playlistmaker.domain.sharing.impl.SharingInteractorImpl
 import com.example.playlistmaker.domain.sharing.model.EmailData
+import com.example.playlistmaker.util.ResourceProvider
 import com.google.gson.Gson
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -28,6 +30,12 @@ object Creator {
     private const val PREFS_SETTINGS = "SETTINGS"
     private const val BASE_URL = "https://itunes.apple.com"
     private const val PREFS_HISTORY = "playlist_prefs"
+
+    private lateinit var resourceProvider: ResourceProvider
+
+    fun initWith(context: Context) {
+        resourceProvider = ResourceProvider(context.applicationContext)
+    }
 
     // ---- Network ----
     private fun provideItunesApi(): ItunesApi {
@@ -51,10 +59,9 @@ object Creator {
     }
 
     // ---- Player ----
-    // MediaPlayer создаётся здесь и передаётся в репозиторий через конструктор
-
-    fun provideMediaPlayerRepository(): MediaPlayerRepository {
-        return MediaPlayerRepositoryImpl(MediaPlayer())
+    fun provideMediaPlayerInteractor(): MediaPlayerInteractor {
+        val repository: MediaPlayerRepository = MediaPlayerRepositoryImpl(MediaPlayer())
+        return MediaPlayerInteractor(repository)
     }
 
     // ---- Settings ----
@@ -67,15 +74,14 @@ object Creator {
     // ---- Sharing ----
     fun provideSharingInteractor(context: Context): SharingInteractor {
         val navigator = ExternalNavigatorImpl(context.applicationContext)
-        val resources = com.example.playlistmaker.App.instance.resourceProvider
         return SharingInteractorImpl(
             externalNavigator = navigator,
-            shareAppLink = resources.getString(R.string.share_app_url),
-            termsLink = resources.getString(R.string.user_agreement_url),
+            shareAppLink = resourceProvider.getString(R.string.share_app_url),
+            termsLink = resourceProvider.getString(R.string.user_agreement_url),
             supportEmailData = EmailData(
-                email = resources.getString(R.string.support_email),
-                subject = resources.getString(R.string.support_subject),
-                body = resources.getString(R.string.support_body)
+                email = resourceProvider.getString(R.string.support_email),
+                subject = resourceProvider.getString(R.string.support_subject),
+                body = resourceProvider.getString(R.string.support_body)
             )
         )
     }
