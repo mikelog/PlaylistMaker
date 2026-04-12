@@ -1,4 +1,3 @@
-//MediaActivity.kt
 package com.example.playlistmaker.presentation.media
 
 import android.os.Bundle

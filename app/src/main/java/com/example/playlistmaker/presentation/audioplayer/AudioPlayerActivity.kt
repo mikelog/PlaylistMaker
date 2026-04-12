@@ -2,18 +2,20 @@ package com.example.playlistmaker.presentation.audioplayer
 
 import android.content.Intent
 import android.os.Bundle
+import android.widget.Button
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
+import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.example.playlistmaker.R
-import com.example.playlistmaker.domain.interactor.PlayerInteractor
+import com.example.playlistmaker.creator.Creator
 import com.example.playlistmaker.domain.models.Track
-import com.example.playlistmaker.util.Creator
-import com.google.android.material.button.MaterialButton
-import java.text.SimpleDateFormat
-import java.util.Locale
 
 class AudioPlayerActivity : AppCompatActivity() {
 
@@ -26,10 +28,10 @@ class AudioPlayerActivity : AppCompatActivity() {
     private lateinit var primaryGenreName: TextView
     private lateinit var trackTime: TextView
     private lateinit var textProgress: TextView
-    private lateinit var btnBack: MaterialButton
+    private lateinit var btnBack: Button
     private lateinit var buttonPlay: ImageButton
 
-    private lateinit var player: PlayerInteractor
+    private lateinit var viewModel: AudioPlayerViewModel
 
     companion object {
         private const val EXTRA_TRACK = "com.example.playlistmaker.EXTRA_TRACK"
@@ -42,8 +44,28 @@ class AudioPlayerActivity : AppCompatActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_audio_player)
+
+        // NestedScrollView — отступ сверху, чтобы кнопка «Назад» не уходила под статус-бар
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.audioPlayerRoot)) { view, insets ->
+            val statusBar = insets.getInsets(WindowInsetsCompat.Type.statusBars())
+            val navBar = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
+            view.updatePadding(top = statusBar.top, bottom = navBar.bottom)
+            insets
+        }
+
+        val track = intent.getParcelableExtra(EXTRA_TRACK, Track::class.java)
+            ?: run { finish(); return }
+
+        viewModel = ViewModelProvider(
+            this,
+            AudioPlayerViewModelFactory(
+                track = track,
+                playerInteractor = Creator.provideMediaPlayerInteractor()
+            )
+        )[AudioPlayerViewModel::class.java]
 
         btnBack = findViewById(R.id.btnBack)
         albumArt = findViewById(R.id.albumArt)
@@ -58,37 +80,20 @@ class AudioPlayerActivity : AppCompatActivity() {
         buttonPlay = findViewById(R.id.buttonPlay)
 
         btnBack.setOnClickListener { finish() }
+        buttonPlay.setOnClickListener { viewModel.onPlayPauseClicked() }
 
-        // Получаем интерактор через Creator
-        player = Creator.providePlayerInteractor()
+        bindTrack(track)
+        observeViewModel()
+    }
 
-        player.setOnStateChangeListener { state ->
-            when (state) {
-                PlayerInteractor.State.PLAYING ->
-                    buttonPlay.setImageResource(R.drawable.ic_pause_100)
-                else ->
-                    buttonPlay.setImageResource(R.drawable.ic_play_100)
-            }
-            buttonPlay.isEnabled = state != PlayerInteractor.State.DEFAULT
-            buttonPlay.alpha = if (buttonPlay.isEnabled) 1f else 0.5f
-        }
-        player.setOnProgressUpdateListener { ms ->
-            textProgress.text = SimpleDateFormat("mm:ss", Locale.getDefault()).format(ms)
-        }
-
-        val track = intent.getParcelableExtra(EXTRA_TRACK, Track::class.java)
-        track?.let {
-            bindTrack(it)
-            player.prepare(it.previewUrl)
-        }
-
-        buttonPlay.setOnClickListener {
-            when (player.state) {
-                PlayerInteractor.State.PLAYING -> player.pause()
-                PlayerInteractor.State.PREPARED,
-                PlayerInteractor.State.PAUSED -> player.play()
-                else -> {}
-            }
+    private fun observeViewModel() {
+        viewModel.screenState.observe(this) { state ->
+            buttonPlay.setImageResource(
+                if (state.isPlaying) R.drawable.ic_pause_100 else R.drawable.ic_play_100
+            )
+            buttonPlay.isEnabled = state.isPlayEnabled
+            buttonPlay.alpha = if (state.isPlayEnabled) 1f else 0.5f
+            textProgress.text = state.progress
         }
     }
 
@@ -111,11 +116,6 @@ class AudioPlayerActivity : AppCompatActivity() {
 
     override fun onPause() {
         super.onPause()
-        player.pause()
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        player.release()
+        viewModel.onActivityPaused()
     }
 }
