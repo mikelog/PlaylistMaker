@@ -6,15 +6,14 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
-import androidx.lifecycle.ViewModelProvider
 import com.example.playlistmaker.R
-import com.example.playlistmaker.creator.Creator
 import com.google.android.material.switchmaterial.SwitchMaterial
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SettingsActivity : AppCompatActivity() {
 
     private lateinit var themeSwitch: SwitchMaterial
-    private lateinit var viewModel: SettingsViewModel
+    private val viewModel by viewModel<SettingsViewModel>()
 
     private var isSwitchInitializing = false
 
@@ -23,7 +22,6 @@ class SettingsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
 
-        // top — на toolbar, bottom — на корень
         val rootView = findViewById<android.view.View>(R.id.settingsRoot)
         val toolBar = findViewById<android.view.View>(R.id.settingsToolbar)
         ViewCompat.setOnApplyWindowInsetsListener(rootView) { view, insets ->
@@ -35,14 +33,6 @@ class SettingsActivity : AppCompatActivity() {
             view.updatePadding(bottom = navBar.bottom)
             insets
         }
-
-        viewModel = ViewModelProvider(
-            this,
-            SettingsViewModelFactory(
-                settingsInteractor = Creator.provideSettingsInteractor(this),
-                sharingInteractor = Creator.provideSharingInteractor(this)
-            )
-        )[SettingsViewModel::class.java]
 
         themeSwitch = findViewById(R.id.themeSwitcher)
 

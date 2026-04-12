@@ -17,13 +17,12 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
 import androidx.core.widget.doOnTextChanged
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.playlistmaker.R
-import com.example.playlistmaker.creator.Creator
 import com.example.playlistmaker.presentation.adapter.TrackAdapter
 import com.example.playlistmaker.presentation.audioplayer.AudioPlayerActivity
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SearchActivity : AppCompatActivity() {
 
@@ -38,7 +37,7 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var containerSearchHistory: LinearLayout
     private lateinit var progressBar: ProgressBar
 
-    private lateinit var viewModel: SearchViewModel
+    private val viewModel by viewModel<SearchViewModel>()
 
     private var isClickAllowed = true
     private val clickHandler = android.os.Handler(android.os.Looper.getMainLooper())
@@ -66,13 +65,6 @@ class SearchActivity : AppCompatActivity() {
             view.updatePadding(bottom = navBar.bottom)
             insets
         }
-
-        val factory = SearchViewModelFactory(
-            owner = this,
-            searchInteractor = Creator.provideSearchTracksInteractor(),
-            historyInteractor = Creator.provideSearchHistoryInteractor(this)
-        )
-        viewModel = ViewModelProvider(this, factory)[SearchViewModel::class.java]
 
         val btnBack: Button = findViewById(R.id.btnBack)
         searchEditText = findViewById(R.id.searchEditText)

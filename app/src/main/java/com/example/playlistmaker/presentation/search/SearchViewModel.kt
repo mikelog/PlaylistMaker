@@ -4,7 +4,6 @@ import android.os.Handler
 import android.os.Looper
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import com.example.playlistmaker.domain.interactor.SearchHistoryInteractor
 import com.example.playlistmaker.domain.interactor.SearchTracksInteractor
@@ -12,8 +11,7 @@ import com.example.playlistmaker.domain.models.Track
 
 class SearchViewModel(
     private val searchInteractor: SearchTracksInteractor,
-    private val historyInteractor: SearchHistoryInteractor,
-    private val savedStateHandle: SavedStateHandle
+    private val historyInteractor: SearchHistoryInteractor
 ) : ViewModel() {
 
     private val _screenState = MutableLiveData(ScreenState())
@@ -26,19 +24,9 @@ class SearchViewModel(
 
     companion object {
         private const val SEARCH_DEBOUNCE_DELAY = 2000L
-        private const val KEY_QUERY = "search_query"
-    }
-
-    init {
-        val restoredQuery = savedStateHandle.get<String>(KEY_QUERY).orEmpty()
-        if (restoredQuery.isNotBlank()) {
-            _screenState.value = ScreenState(query = restoredQuery)
-            performSearch(restoredQuery)
-        }
     }
 
     fun onQueryChanged(query: String, fieldHasFocus: Boolean) {
-        savedStateHandle[KEY_QUERY] = query
         val current = _screenState.value ?: ScreenState()
         if (query.isBlank()) {
             handler.removeCallbacks(searchRunnable)
@@ -67,7 +55,6 @@ class SearchViewModel(
 
     fun onQueryCleared() {
         handler.removeCallbacks(searchRunnable)
-        savedStateHandle[KEY_QUERY] = ""
         _screenState.value = ScreenState(
             query = "",
             searchContent = SearchContent.Idle,
