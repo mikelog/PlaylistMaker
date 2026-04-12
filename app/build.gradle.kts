@@ -38,6 +38,8 @@ android {
 }
 
 dependencies {
+    implementation("io.insert-koin:koin-android:3.5.0")
+    implementation("io.insert-koin:koin-androidx-navigation:3.5.0")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.7")
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.8.7")
     implementation("com.github.bumptech.glide:glide:4.14.2")
