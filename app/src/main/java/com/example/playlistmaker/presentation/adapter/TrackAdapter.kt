@@ -1,5 +1,6 @@
 package com.example.playlistmaker.presentation.adapter
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -56,10 +57,13 @@ class TrackAdapter(
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         if (holder is TrackViewHolder && state == State.DATA) {
             val track = tracks[position]
+            Log.d("SEARCH_DEBUG", "BIND position=$position ${track.trackName}")
+
             holder.bind(track)
 
             holder.itemView.setOnClickListener {
-                onTrackClick?.invoke(track)
+                    Log.d("SEARCH_DEBUG", "ITEM CLICK position=$position ${track.trackName}")
+                    onTrackClick?.invoke(track)
             }
 
         } else if (holder is PlaceholderViewHolder && state == State.NO_CONNECTION) {

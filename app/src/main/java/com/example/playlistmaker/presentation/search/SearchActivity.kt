@@ -2,7 +2,9 @@ package com.example.playlistmaker.presentation.search
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.View
+import android.view.WindowManager
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
@@ -14,6 +16,7 @@ import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
 import androidx.core.widget.doOnTextChanged
@@ -51,19 +54,32 @@ class SearchActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
+
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search)
 
         val rootView = findViewById<View>(R.id.searchRoot)
         val toolBar = findViewById<View>(R.id.searchToolbar)
         ViewCompat.setOnApplyWindowInsetsListener(rootView) { view, insets ->
+
             val statusBar = insets.getInsets(WindowInsetsCompat.Type.statusBars())
             val navBar = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
-            val toolbarParams = toolBar.layoutParams as android.widget.LinearLayout.LayoutParams
+            val ime = insets.getInsets(WindowInsetsCompat.Type.ime())
+
+            val toolbarParams = toolBar.layoutParams as LinearLayout.LayoutParams
             toolbarParams.topMargin = statusBar.top
             toolBar.layoutParams = toolbarParams
-            view.updatePadding(bottom = navBar.bottom)
-            insets
+
+            view.setPadding(
+                view.paddingLeft,
+                view.paddingTop,
+                view.paddingRight,
+                maxOf(navBar.bottom, ime.bottom)
+            )
+
+            WindowInsetsCompat.CONSUMED
         }
 
         val btnBack: Button = findViewById(R.id.btnBack)
@@ -82,6 +98,21 @@ class SearchActivity : AppCompatActivity() {
         observeViewModel()
     }
 
+    private fun showKeyboard() {
+        searchEditText.post {
+            searchEditText.requestFocus()
+            ViewCompat.getWindowInsetsController(searchEditText)
+                ?.show(WindowInsetsCompat.Type.ime())
+        }
+    }
+
+    override fun onWindowFocusChanged(hasFocus: Boolean) {
+        super.onWindowFocusChanged(hasFocus)
+        if (hasFocus && searchEditText.hasFocus()) {
+            showKeyboard()
+        }
+    }
+
     private fun observeViewModel() {
         viewModel.screenState.observe(this) { state ->
 
@@ -94,8 +125,12 @@ class SearchActivity : AppCompatActivity() {
             clearEditSearchButton.visibility =
                 if (state.query.isEmpty()) View.GONE else View.VISIBLE
 
-            if (state.historyTracks != null) {
-                historyAdapter.updateData(state.historyTracks)
+            val showHistory = state.historyTracks != null &&
+                    state.query.isEmpty() &&
+                    state.searchContent is SearchContent.Idle
+
+            if (showHistory) {
+                historyAdapter.updateData(state.historyTracks ?: emptyList())
                 containerSearchHistory.visibility = View.VISIBLE
                 historyTitle.visibility = View.VISIBLE
                 historyRecycler.visibility = View.VISIBLE
@@ -141,6 +176,7 @@ class SearchActivity : AppCompatActivity() {
 
         clearEditSearchButton.setOnClickListener {
             searchEditText.text.clear()
+            searchEditText.clearFocus()
             hideKeyboard()
             viewModel.onQueryCleared()
         }
@@ -152,16 +188,25 @@ class SearchActivity : AppCompatActivity() {
         searchEditText.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 viewModel.onSearchAction()
+                searchEditText.clearFocus()
                 hideKeyboard()
                 true
             } else false
         }
 
         searchEditText.setOnFocusChangeListener { _, hasFocus ->
+            Log.d("SEARCH_DEBUG", "FOCUS CHANGED: $hasFocus")
+            if (hasFocus) {
+                // Показываем клавиатуру при получении фокуса
+                Log.d("SEARCH_DEBUG", "Try to show KeyBoard")
+                showKeyboard()
+            }
             viewModel.onSearchFocused(hasFocus)
         }
 
         searchEditText.doOnTextChanged { text, _, _, _ ->
+            Log.d("SEARCH_DEBUG", "TEXT CHANGED: $text  restoring=$isRestoringText")
+
             if (!isRestoringText) {
                 viewModel.onQueryChanged(
                     query = text?.toString() ?: "",
@@ -176,9 +221,30 @@ class SearchActivity : AppCompatActivity() {
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = adapter
 
-        adapter.onRetryClick = { viewModel.onRetry() }
+        // Убираем фокус при скролле
+        recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                super.onScrollStateChanged(recyclerView, newState)
+                if (newState == RecyclerView.SCROLL_STATE_DRAGGING) {
+                    if (searchEditText.hasFocus()) {
+                        searchEditText.clearFocus()
+                        hideKeyboard()
+                    }
+                }
+            }
+        })
+
+        adapter.onRetryClick = {
+            viewModel.onRetry()
+        }
+
         adapter.onTrackClick = { track ->
+            Log.d("SEARCH_DEBUG", "RESULT CLICK: ${track.trackName}")
             if (clickDebounce()) {
+                Log.d("SEARCH_DEBUG", "RESULT CLICK PASSED DEBOUNCE")
+                // Убираем фокус перед переходом
+                searchEditText.clearFocus()
+                hideKeyboard()
                 viewModel.onTrackClicked(track)
                 AudioPlayerActivity.start(this, track)
             }
@@ -190,8 +256,26 @@ class SearchActivity : AppCompatActivity() {
         historyRecycler.layoutManager = LinearLayoutManager(this)
         historyRecycler.adapter = historyAdapter
 
+        // Убираем фокус при скролле
+        historyRecycler.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                super.onScrollStateChanged(recyclerView, newState)
+                if (newState == RecyclerView.SCROLL_STATE_DRAGGING) {
+                    if (searchEditText.hasFocus()) {
+                        searchEditText.clearFocus()
+                        hideKeyboard()
+                    }
+                }
+            }
+        })
+
         historyAdapter.onTrackClick = { track ->
+            Log.d("SEARCH_DEBUG", "HISTORY CLICK: ${track.trackName}")
             if (clickDebounce()) {
+                Log.d("SEARCH_DEBUG", "HISTORY CLICK PASSED DEBOUNCE")
+                // Убираем фокус перед переходом
+                searchEditText.clearFocus()
+                hideKeyboard()
                 viewModel.onTrackClicked(track)
                 AudioPlayerActivity.start(this, track)
             }
@@ -201,7 +285,6 @@ class SearchActivity : AppCompatActivity() {
     private fun hideKeyboard() {
         val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(searchEditText.windowToken, 0)
-        searchEditText.clearFocus()
     }
 
     private fun clickDebounce(): Boolean {

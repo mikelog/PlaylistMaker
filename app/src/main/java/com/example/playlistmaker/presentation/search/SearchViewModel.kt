@@ -2,6 +2,7 @@ package com.example.playlistmaker.presentation.search
 
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -27,6 +28,7 @@ class SearchViewModel(
     }
 
     fun onQueryChanged(query: String, fieldHasFocus: Boolean) {
+        Log.d("SEARCH_DEBUG", "VM onQueryChanged: $query focus=$fieldHasFocus")
         val current = _screenState.value ?: ScreenState()
         if (query.isBlank()) {
             handler.removeCallbacks(searchRunnable)
