@@ -1,5 +1,6 @@
 package com.example.playlistmaker.di
 
+import com.example.playlistmaker.R
 import com.example.playlistmaker.domain.interactor.SearchHistoryInteractor
 import com.example.playlistmaker.domain.interactor.SearchHistoryInteractorImpl
 import com.example.playlistmaker.domain.interactor.SearchTracksInteractor
@@ -27,19 +28,20 @@ val interactorModule = module {
         SettingsInteractorImpl(get())
     }
 
-    single<MediaPlayerInteractor> {
+    factory<MediaPlayerInteractor> {
         MediaPlayerInteractor(get())
     }
 
     single<SharingInteractor> {
+        val context = androidContext()
         SharingInteractorImpl(
             externalNavigator = get(),
-            shareAppLink = androidContext().getString(com.example.playlistmaker.R.string.share_app_url),
-            termsLink = androidContext().getString(com.example.playlistmaker.R.string.user_agreement_url),
+            shareAppLink = context.getString(R.string.share_app_url),
+            termsLink = context.getString(R.string.user_agreement_url),
             supportEmailData = EmailData(
-                email = androidContext().getString(com.example.playlistmaker.R.string.support_email),
-                subject = androidContext().getString(com.example.playlistmaker.R.string.support_subject),
-                body = androidContext().getString(com.example.playlistmaker.R.string.support_body)
+                email = context.getString(R.string.support_email),
+                subject = context.getString(R.string.support_subject),
+                body = context.getString(R.string.support_body)
             )
         )
     }

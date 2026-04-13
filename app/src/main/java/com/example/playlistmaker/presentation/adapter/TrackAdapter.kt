@@ -60,12 +60,10 @@ class TrackAdapter(
             Log.d("SEARCH_DEBUG", "BIND position=$position ${track.trackName}")
 
             holder.bind(track)
-
             holder.itemView.setOnClickListener {
                     Log.d("SEARCH_DEBUG", "ITEM CLICK position=$position ${track.trackName}")
                     onTrackClick?.invoke(track)
             }
-
         } else if (holder is PlaceholderViewHolder && state == State.NO_CONNECTION) {
             holder.itemView.findViewById<Button>(R.id.buttonRetry)
                 ?.setOnClickListener { onRetryClick?.invoke() }
