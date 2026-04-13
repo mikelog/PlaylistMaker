@@ -57,11 +57,9 @@ class TrackAdapter(
         if (holder is TrackViewHolder && state == State.DATA) {
             val track = tracks[position]
             holder.bind(track)
-
             holder.itemView.setOnClickListener {
                 onTrackClick?.invoke(track)
             }
-
         } else if (holder is PlaceholderViewHolder && state == State.NO_CONNECTION) {
             holder.itemView.findViewById<Button>(R.id.buttonRetry)
                 ?.setOnClickListener { onRetryClick?.invoke() }

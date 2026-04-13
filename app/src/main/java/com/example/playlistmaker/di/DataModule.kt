@@ -1,12 +1,12 @@
 package com.example.playlistmaker.di
 
 import android.content.Context
-import android.media.MediaPlayer
 import com.example.playlistmaker.data.network.ItunesApi
 import com.example.playlistmaker.data.player.impl.MediaPlayerRepositoryImpl
 import com.example.playlistmaker.data.repository.SearchHistoryRepositoryImpl
 import com.example.playlistmaker.data.repository.TrackRepositoryImpl
 import com.example.playlistmaker.data.settings.ThemeRepositoryImpl
+import com.example.playlistmaker.data.sharing.ExternalNavigator
 import com.example.playlistmaker.data.sharing.ExternalNavigatorImpl
 import com.example.playlistmaker.domain.player.MediaPlayerRepository
 import com.example.playlistmaker.domain.repository.SearchHistoryRepository
@@ -62,7 +62,7 @@ val dataModule = module {
     }
 
     // External Navigator
-    single {
+    single<ExternalNavigator> {
         ExternalNavigatorImpl(androidContext())
     }
 }
