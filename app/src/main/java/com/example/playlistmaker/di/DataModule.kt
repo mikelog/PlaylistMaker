@@ -60,8 +60,10 @@ val dataModule = module {
         ThemeRepositoryImpl(get(named(SHARED_PREFS_SETTINGS)))
     }
 
+    factory { MediaPlayer() }
+
     factory<MediaPlayerRepository> {
-        MediaPlayerRepositoryImpl()
+        MediaPlayerRepositoryImpl(get())
     }
 
     // External Navigator
