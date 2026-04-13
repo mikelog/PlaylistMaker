@@ -4,7 +4,6 @@ import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.view.WindowManager
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
@@ -18,7 +17,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.updatePadding
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.core.widget.doOnTextChanged
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -101,8 +100,8 @@ class SearchActivity : AppCompatActivity() {
     private fun showKeyboard() {
         searchEditText.post {
             searchEditText.requestFocus()
-            ViewCompat.getWindowInsetsController(searchEditText)
-                ?.show(WindowInsetsCompat.Type.ime())
+            WindowInsetsControllerCompat(window, searchEditText)
+                .show(WindowInsetsCompat.Type.ime())
         }
     }
 

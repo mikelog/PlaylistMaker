@@ -1,6 +1,7 @@
 package com.example.playlistmaker.di
 
 import android.content.Context
+import android.media.MediaPlayer
 import com.example.playlistmaker.data.network.ItunesApi
 import com.example.playlistmaker.data.player.impl.MediaPlayerRepositoryImpl
 import com.example.playlistmaker.data.repository.SearchHistoryRepositoryImpl
@@ -19,42 +20,44 @@ import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
+private const val ITUNES_BASE_URL = "https://itunes.apple.com"
+private const val SHARED_PREFS_HISTORY = "history_prefs"
+private const val SHARED_PREFS_SETTINGS = "settings_prefs"
+private const val SHARED_PREFS_HISTORY_NAME = "playlist_prefs"
+private const val SHARED_PREFS_SETTINGS_NAME = "SETTINGS"
+
 val dataModule = module {
 
-    // Network
     single<ItunesApi> {
         Retrofit.Builder()
-            .baseUrl("https://itunes.apple.com")
+            .baseUrl(ITUNES_BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(ItunesApi::class.java)
     }
 
-    // SharedPreferences
-    single(named("history_prefs")) {
+    single(named(SHARED_PREFS_HISTORY)) {
         androidContext()
-            .getSharedPreferences("playlist_prefs", Context.MODE_PRIVATE)
+            .getSharedPreferences(SHARED_PREFS_HISTORY_NAME, Context.MODE_PRIVATE)
     }
 
-    single(named("settings_prefs")) {
+    single(named(SHARED_PREFS_SETTINGS)) {
         androidContext()
-            .getSharedPreferences("SETTINGS", Context.MODE_PRIVATE)
+            .getSharedPreferences(SHARED_PREFS_SETTINGS_NAME, Context.MODE_PRIVATE)
     }
 
-    // Gson
     factory { Gson() }
 
-    // Repositories
     single<TrackRepository> {
         TrackRepositoryImpl(get())
     }
 
     single<SearchHistoryRepository> {
-        SearchHistoryRepositoryImpl(get(named("history_prefs")), get())
+        SearchHistoryRepositoryImpl(get(named(SHARED_PREFS_HISTORY)), get())
     }
 
     single<SettingsRepository> {
-        ThemeRepositoryImpl(get(named("settings_prefs")))
+        ThemeRepositoryImpl(get(named(SHARED_PREFS_SETTINGS)))
     }
 
     factory<MediaPlayerRepository> {
