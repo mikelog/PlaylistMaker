@@ -11,11 +11,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
-import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.example.playlistmaker.R
-import com.example.playlistmaker.creator.Creator
 import com.example.playlistmaker.domain.models.Track
+import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 
 class AudioPlayerActivity : AppCompatActivity() {
 
@@ -31,8 +31,6 @@ class AudioPlayerActivity : AppCompatActivity() {
     private lateinit var btnBack: Button
     private lateinit var buttonPlay: ImageButton
 
-    private lateinit var viewModel: AudioPlayerViewModel
-
     companion object {
         private const val EXTRA_TRACK = "com.example.playlistmaker.EXTRA_TRACK"
 
@@ -43,29 +41,27 @@ class AudioPlayerActivity : AppCompatActivity() {
         }
     }
 
+    // Получаем track до инициализации ViewModel
+    private val track: Track by lazy {
+        intent.getParcelableExtra(EXTRA_TRACK, Track::class.java)
+            ?: throw IllegalStateException("Track must be provided")
+    }
+
+    private val viewModel: AudioPlayerViewModel by viewModel {
+        parametersOf(track)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_audio_player)
 
-        // NestedScrollView — отступ сверху, чтобы кнопка «Назад» не уходила под статус-бар
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.audioPlayerRoot)) { view, insets ->
             val statusBar = insets.getInsets(WindowInsetsCompat.Type.statusBars())
             val navBar = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
             view.updatePadding(top = statusBar.top, bottom = navBar.bottom)
             insets
         }
-
-        val track = intent.getParcelableExtra(EXTRA_TRACK, Track::class.java)
-            ?: run { finish(); return }
-
-        viewModel = ViewModelProvider(
-            this,
-            AudioPlayerViewModelFactory(
-                track = track,
-                playerInteractor = Creator.provideMediaPlayerInteractor()
-            )
-        )[AudioPlayerViewModel::class.java]
 
         btnBack = findViewById(R.id.btnBack)
         albumArt = findViewById(R.id.albumArt)

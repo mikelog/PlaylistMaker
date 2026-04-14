@@ -7,13 +7,17 @@ class MediaPlayerRepositoryImpl(
     private val mediaPlayer: MediaPlayer
 ) : MediaPlayerRepository {
 
-    override fun prepare(url: String, onPrepared: () -> Unit, onCompletion: () -> Unit) {
-        mediaPlayer.apply {
-            setDataSource(url)
-            prepareAsync()
-            setOnPreparedListener { onPrepared() }
-            setOnCompletionListener { onCompletion() }
-        }
+    override fun prepare(
+        url: String,
+        onPrepared: () -> Unit,
+        onCompletion: () -> Unit
+    ) {
+        mediaPlayer.reset()
+
+        mediaPlayer.setDataSource(url)
+        mediaPlayer.setOnPreparedListener { onPrepared() }
+        mediaPlayer.setOnCompletionListener { onCompletion() }
+        mediaPlayer.prepareAsync()
     }
 
     override fun play() {
