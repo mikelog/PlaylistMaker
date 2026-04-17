@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        app:contentInsetStart="0dp"
+        app:contentInsetStartWithNavigation="12dp"
+        app:contentInsetLeft="0dp"
+        app:contentInsetRight="0dp"
+        android:paddingStart="0dp"
+        android:paddingEnd="0dp"
+
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/settings_title_height"
+        android:minHeight="?attr/actionBarSize"
+        app:navigationIcon="@drawable/ic_arrow_back_24"
+        app:title="@string/library"
+        app:navigationIconTint="?attr/colorOnSecondary"
+        app:titleTextAppearance="@style/ToolbarTitleTextAppearance"
+        app:titleMarginStart="12dp"
+        />
+
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tabLayout"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        app:tabMode="fixed"
+        app:tabContentStart="@dimen/margin_54"
+        app:tabIndicatorFullWidth="true"
+
+        app:tabIndicatorHeight="2dp"
+        app:tabIndicator="@drawable/tab_indicator"
+
+        app:tabTextAppearance="@style/TabTextAppearance"
+        app:tabIndicatorColor="?attr/colorOnSecondary"
+        app:tabSelectedTextColor="?attr/colorOnSecondary"
+        app:tabTextColor="?attr/colorOnSecondary">
+
+    </com.google.android.material.tabs.TabLayout>
+
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/viewPager"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+</LinearLayout>

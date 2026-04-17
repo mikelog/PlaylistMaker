@@ -25,7 +25,6 @@
             </intent-filter>
         </activity>
         <activity android:name=".presentation.settings.SettingsActivity" />
-        <activity android:name=".presentation.media.MediaActivity" />
         <activity
             android:name=".presentation.search.SearchActivity"
             android:windowSoftInputMode="adjustResize"
