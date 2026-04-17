@@ -18,7 +18,7 @@ class MediaLibraryPagerAdapter(
         return when (position) {
             0 -> FavouriteTracksFragment.newInstance()
             1 -> PlaylistsFragment.newInstance()
-            else -> throw IllegalArgumentException("Invalid position: $position")
+            else -> PlaylistsFragment.newInstance()
         }
     }
 }
