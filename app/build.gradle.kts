@@ -42,6 +42,9 @@ android {
 }
 
 dependencies {
+    //Navigator
+    implementation(libs.navigation.fragment)
+    implementation(libs.navigation.ui)
     // Networking
     implementation(libs.retrofit)
     implementation(libs.retrofit.converter.gson)
