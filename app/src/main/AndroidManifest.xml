@@ -14,23 +14,16 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.PlaylistMaker">
-        <activity
-            android:name=".presentation.main.MainActivity"
 
-            android:exported="true">
+        <activity
+            android:name=".ui.root.RootActivity"
+            android:exported="true"
+            android:windowSoftInputMode="adjustPan">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".presentation.settings.SettingsActivity" />
-        <activity
-            android:name=".presentation.search.SearchActivity"
-            android:windowSoftInputMode="adjustResize"
-            />
-        <activity android:name=".presentation.audioplayer.AudioPlayerActivity" />
 
     </application>
-
 </manifest>

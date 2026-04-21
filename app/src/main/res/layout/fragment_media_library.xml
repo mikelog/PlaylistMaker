@@ -19,7 +19,6 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/settings_title_height"
         android:minHeight="?attr/actionBarSize"
-        app:navigationIcon="@drawable/ic_arrow_back_24"
         app:title="@string/library"
         app:navigationIconTint="?attr/colorOnSecondary"
         app:titleTextAppearance="@style/ToolbarTitleTextAppearance"

@@ -8,4 +8,5 @@
     <color name="teal_200">#FF03DAC5</color>
     <color name="yp_black">#1A1B22</color>
     <color name="yp_gray">#AEAFB4</color>
+    <color name="yp_gray_light">#E6E8EB</color>
 </resources>
