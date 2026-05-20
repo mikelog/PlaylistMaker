@@ -1,7 +1,6 @@
 package com.example.playlistmaker.ui.search
 
 import com.example.playlistmaker.ui.audioplayer.AudioPlayerFragment
-
 import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -9,12 +8,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
-import android.widget.Button
-import android.widget.EditText
-import android.widget.ImageButton
-import android.widget.LinearLayout
-import android.widget.ProgressBar
-import android.widget.TextView
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
@@ -36,14 +29,7 @@ class SearchFragment : Fragment() {
     private lateinit var adapter: TrackAdapter
     private lateinit var historyAdapter: TrackAdapter
 
-    private var isClickAllowed = true
-    private val clickHandler = android.os.Handler(android.os.Looper.getMainLooper())
-    private val clickDebounceRunnable = Runnable { isClickAllowed = true }
     private var isRestoringText = false
-
-    companion object {
-        private const val CLICK_DEBOUNCE_DELAY = 1000L
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -170,7 +156,7 @@ class SearchFragment : Fragment() {
         adapter.onRetryClick = { viewModel.onRetry() }
 
         adapter.onTrackClick = { track ->
-            if (clickDebounce()) {
+            if (viewModel.clickDebounce()) {
                 binding.searchEditText.clearFocus()
                 hideKeyboard()
                 viewModel.onTrackClicked(track)
@@ -197,7 +183,7 @@ class SearchFragment : Fragment() {
         })
 
         historyAdapter.onTrackClick = { track ->
-            if (clickDebounce()) {
+            if (viewModel.clickDebounce()) {
                 binding.searchEditText.clearFocus()
                 hideKeyboard()
                 viewModel.onTrackClicked(track)
@@ -215,15 +201,6 @@ class SearchFragment : Fragment() {
         imm.hideSoftInputFromWindow(binding.searchEditText.windowToken, 0)
     }
 
-    private fun clickDebounce(): Boolean {
-        val current = isClickAllowed
-        if (isClickAllowed) {
-            isClickAllowed = false
-            clickHandler.postDelayed(clickDebounceRunnable, CLICK_DEBOUNCE_DELAY)
-        }
-        return current
-    }
-
     override fun onResume() {
         super.onResume()
         if (binding.searchEditText.hasFocus()) viewModel.onSearchFocused(true)
@@ -231,8 +208,6 @@ class SearchFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        clickHandler.removeCallbacks(clickDebounceRunnable)
         _binding = null
     }
 }
-

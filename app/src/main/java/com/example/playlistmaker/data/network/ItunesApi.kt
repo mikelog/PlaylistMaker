@@ -1,13 +1,12 @@
 package com.example.playlistmaker.data.network
 
-import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Query
 
 interface ItunesApi {
     @GET("/search?entity=song")
-    fun search(@Query("term") text: String): Call<TracksResponse>
+    suspend fun search(@Query("term") text: String): TracksResponse
 
     @GET("/lookup")
-    fun lookup(@Query("id") id: Long): Call<TracksResponse>
+    suspend fun lookup(@Query("id") id: Long): TracksResponse
 }
