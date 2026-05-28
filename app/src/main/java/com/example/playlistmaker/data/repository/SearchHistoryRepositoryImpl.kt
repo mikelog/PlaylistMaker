@@ -1,6 +1,7 @@
 package com.example.playlistmaker.data.repository
 
 import android.content.SharedPreferences
+import com.example.playlistmaker.data.db.AppDatabase
 import com.example.playlistmaker.data.dto.TrackHistoryDto
 import com.example.playlistmaker.data.mapper.toHistoryDto
 import com.example.playlistmaker.data.mapper.toTrack
@@ -10,7 +11,8 @@ import com.google.gson.Gson
 
 class SearchHistoryRepositoryImpl(
     private val sharedPreferences: SharedPreferences,
-    private val gson: Gson
+    private val gson: Gson,
+    private val db: AppDatabase
 ) : SearchHistoryRepository {
 
     companion object {
@@ -18,14 +20,17 @@ class SearchHistoryRepositoryImpl(
         private const val MAX_HISTORY_SIZE = 10
     }
 
-    override fun getHistory(): List<Track> {
+    override suspend fun getHistory(): List<Track> {
         val json = sharedPreferences.getString(HISTORY_KEY, null) ?: return emptyList()
-        // Читаем как список DTO, затем маппим в доменные модели
-        return gson.fromJson(json, Array<TrackHistoryDto>::class.java)
+        val tracks = gson.fromJson(json, Array<TrackHistoryDto>::class.java)
             .mapNotNull { it.toTrack() }
+        val favoriteIds = db.favouriteTracksDao().getAllFavoriteIds().toSet()
+        return tracks.map { track ->
+            if (track.trackId in favoriteIds) track.copy(isFavorite = true) else track
+        }
     }
 
-    override fun addTrack(track: Track) {
+    override suspend fun addTrack(track: Track) {
         val history = getHistory().toMutableList()
         history.removeAll { it.trackId == track.trackId }
         history.add(0, track)
@@ -40,7 +45,6 @@ class SearchHistoryRepositoryImpl(
     }
 
     private fun save(history: List<Track>) {
-        // Сохраняем как список DTO, не доменных моделей
         val dtoList = history.map { it.toHistoryDto() }
         sharedPreferences.edit().putString(HISTORY_KEY, gson.toJson(dtoList)).apply()
     }
