@@ -7,6 +7,7 @@ import com.example.playlistmaker.data.db.AppDatabase
 import com.example.playlistmaker.data.network.ItunesApi
 import com.example.playlistmaker.data.player.impl.MediaPlayerRepositoryImpl
 import com.example.playlistmaker.data.repository.FavouriteTracksRepositoryImpl
+import com.example.playlistmaker.data.repository.PlaylistRepositoryImpl
 import com.example.playlistmaker.data.repository.SearchHistoryRepositoryImpl
 import com.example.playlistmaker.data.repository.TrackRepositoryImpl
 import com.example.playlistmaker.data.settings.ThemeRepositoryImpl
@@ -14,6 +15,7 @@ import com.example.playlistmaker.data.sharing.ExternalNavigator
 import com.example.playlistmaker.data.sharing.ExternalNavigatorImpl
 import com.example.playlistmaker.domain.player.MediaPlayerRepository
 import com.example.playlistmaker.domain.repository.FavouriteTracksRepository
+import com.example.playlistmaker.domain.repository.PlaylistRepository
 import com.example.playlistmaker.domain.repository.SearchHistoryRepository
 import com.example.playlistmaker.domain.repository.TrackRepository
 import com.example.playlistmaker.domain.settings.SettingsRepository
@@ -54,7 +56,9 @@ val dataModule = module {
     factory { Gson() }
 
     single<AppDatabase> {
-        Room.databaseBuilder(androidContext(), AppDatabase::class.java, DB_NAME).build()
+        Room.databaseBuilder(androidContext(), AppDatabase::class.java, DB_NAME)
+            .fallbackToDestructiveMigration()
+            .build()
     }
 
     single<TrackRepository> {
@@ -67,6 +71,10 @@ val dataModule = module {
 
     single<FavouriteTracksRepository> {
         FavouriteTracksRepositoryImpl(get())
+    }
+
+    single<PlaylistRepository> {
+        PlaylistRepositoryImpl(get())
     }
 
     single<SettingsRepository> {

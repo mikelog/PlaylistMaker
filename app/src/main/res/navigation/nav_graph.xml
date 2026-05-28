@@ -11,6 +11,9 @@
         <action
             android:id="@+id/action_mediaLibraryFragment_to_audioPlayerFragment"
             app:destination="@id/audioPlayerFragment" />
+        <action
+            android:id="@+id/action_mediaLibraryFragment_to_newPlaylistFragment"
+            app:destination="@id/newPlaylistFragment" />
     </fragment>
 
     <fragment
@@ -34,6 +37,14 @@
         <argument
             android:name="arg_track"
             app:argType="com.example.playlistmaker.domain.models.Track" />
+        <action
+            android:id="@+id/action_audioPlayerFragment_to_newPlaylistFragment"
+            app:destination="@id/newPlaylistFragment" />
     </fragment>
+
+    <fragment
+        android:id="@+id/newPlaylistFragment"
+        android:name="com.example.playlistmaker.ui.medialibrary.fragments.NewPlaylistFragment"
+        android:label="@string/new_playlist_title" />
 
 </navigation>
