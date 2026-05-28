@@ -34,8 +34,9 @@ class SearchViewModel(
             _screenState.value = current.copy(
                 query = query,
                 searchContent = SearchContent.Idle,
-                historyTracks = if (fieldHasFocus) getHistoryOrNull() else null
+                historyTracks = null
             )
+            if (fieldHasFocus) loadHistory()
         } else {
             _screenState.value = current.copy(
                 query = query,
@@ -48,7 +49,7 @@ class SearchViewModel(
     fun onSearchFocused(hasFocus: Boolean) {
         val current = _screenState.value ?: ScreenState()
         if (hasFocus && current.query.isBlank()) {
-            _screenState.value = current.copy(historyTracks = getHistoryOrNull())
+            loadHistory()
         } else if (!hasFocus) {
             _screenState.value = current.copy(historyTracks = null)
         }
@@ -59,8 +60,9 @@ class SearchViewModel(
         _screenState.value = ScreenState(
             query = "",
             searchContent = SearchContent.Idle,
-            historyTracks = getHistoryOrNull()
+            historyTracks = null
         )
+        loadHistory()
     }
 
     fun onSearchAction() {
@@ -74,10 +76,13 @@ class SearchViewModel(
     }
 
     fun onTrackClicked(track: Track) {
-        historyInteractor.addTrack(track)
-        val current = _screenState.value ?: return
-        if (current.historyTracks != null) {
-            _screenState.value = current.copy(historyTracks = historyInteractor.getHistory())
+        viewModelScope.launch {
+            historyInteractor.addTrack(track)
+            val current = _screenState.value ?: return@launch
+            if (current.historyTracks != null) {
+                val history = historyInteractor.getHistory()
+                _screenState.value = current.copy(historyTracks = history.ifEmpty { null })
+            }
         }
     }
 
@@ -92,6 +97,15 @@ class SearchViewModel(
     fun onClearHistory() {
         historyInteractor.clearHistory()
         _screenState.value = (_screenState.value ?: ScreenState()).copy(historyTracks = null)
+    }
+
+
+    private fun loadHistory() {
+        viewModelScope.launch {
+            val history = historyInteractor.getHistory()
+            val current = _screenState.value ?: ScreenState()
+            _screenState.value = current.copy(historyTracks = history.ifEmpty { null })
+        }
     }
 
     private fun scheduleSearch(query: String) {
@@ -120,10 +134,5 @@ class SearchViewModel(
                     (_screenState.value ?: ScreenState()).copy(searchContent = content)
             }
         }
-    }
-
-    private fun getHistoryOrNull(): List<Track>? {
-        val history = historyInteractor.getHistory()
-        return history.ifEmpty { null }
     }
 }

@@ -2,14 +2,18 @@ package com.example.playlistmaker.di
 
 import android.content.Context
 import android.media.MediaPlayer
+import androidx.room.Room
+import com.example.playlistmaker.data.db.AppDatabase
 import com.example.playlistmaker.data.network.ItunesApi
 import com.example.playlistmaker.data.player.impl.MediaPlayerRepositoryImpl
+import com.example.playlistmaker.data.repository.FavouriteTracksRepositoryImpl
 import com.example.playlistmaker.data.repository.SearchHistoryRepositoryImpl
 import com.example.playlistmaker.data.repository.TrackRepositoryImpl
 import com.example.playlistmaker.data.settings.ThemeRepositoryImpl
 import com.example.playlistmaker.data.sharing.ExternalNavigator
 import com.example.playlistmaker.data.sharing.ExternalNavigatorImpl
 import com.example.playlistmaker.domain.player.MediaPlayerRepository
+import com.example.playlistmaker.domain.repository.FavouriteTracksRepository
 import com.example.playlistmaker.domain.repository.SearchHistoryRepository
 import com.example.playlistmaker.domain.repository.TrackRepository
 import com.example.playlistmaker.domain.settings.SettingsRepository
@@ -25,6 +29,7 @@ private const val SHARED_PREFS_HISTORY = "history_prefs"
 private const val SHARED_PREFS_SETTINGS = "settings_prefs"
 private const val SHARED_PREFS_HISTORY_NAME = "playlist_prefs"
 private const val SHARED_PREFS_SETTINGS_NAME = "SETTINGS"
+private const val DB_NAME = "playlist_maker_db"
 
 val dataModule = module {
 
@@ -48,12 +53,20 @@ val dataModule = module {
 
     factory { Gson() }
 
+    single<AppDatabase> {
+        Room.databaseBuilder(androidContext(), AppDatabase::class.java, DB_NAME).build()
+    }
+
     single<TrackRepository> {
-        TrackRepositoryImpl(get())
+        TrackRepositoryImpl(get(), get())
     }
 
     single<SearchHistoryRepository> {
-        SearchHistoryRepositoryImpl(get(named(SHARED_PREFS_HISTORY)), get())
+        SearchHistoryRepositoryImpl(get(named(SHARED_PREFS_HISTORY)), get(), get())
+    }
+
+    single<FavouriteTracksRepository> {
+        FavouriteTracksRepositoryImpl(get())
     }
 
     single<SettingsRepository> {
@@ -66,7 +79,6 @@ val dataModule = module {
         MediaPlayerRepositoryImpl(get())
     }
 
-    // External Navigator
     single<ExternalNavigator> {
         ExternalNavigatorImpl(androidContext())
     }

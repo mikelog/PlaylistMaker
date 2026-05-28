@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.playlistmaker.domain.interactor.FavouriteTracksInteractor
 import com.example.playlistmaker.domain.models.Track
 import com.example.playlistmaker.domain.player.MediaPlayerInteractor
 import kotlinx.coroutines.Job
@@ -15,7 +16,8 @@ import java.util.Locale
 
 class AudioPlayerViewModel(
     private val track: Track,
-    private val playerInteractor: MediaPlayerInteractor
+    private val playerInteractor: MediaPlayerInteractor,
+    private val favouriteInteractor: FavouriteTracksInteractor
 ) : ViewModel() {
 
     data class PlayerScreenState(
@@ -27,10 +29,14 @@ class AudioPlayerViewModel(
     private val _screenState = MutableLiveData(PlayerScreenState())
     val screenState: LiveData<PlayerScreenState> = _screenState
 
+    private val _isFavorite = MutableLiveData(track.isFavorite)
+    val isFavorite: LiveData<Boolean> = _isFavorite
+
     private var progressJob: Job? = null
 
     init {
         preparePlayer()
+        checkIfFavorite()
     }
 
     fun onPlayPauseClicked() {
@@ -39,6 +45,27 @@ class AudioPlayerViewModel(
 
     fun onActivityPaused() {
         pause()
+    }
+
+    fun onFavoriteClicked() {
+        val currentTrack = track.copy(isFavorite = _isFavorite.value ?: false)
+        viewModelScope.launch {
+            if (currentTrack.isFavorite) {
+                favouriteInteractor.deleteTrack(currentTrack)
+            } else {
+                favouriteInteractor.addTrack(currentTrack)
+            }
+            _isFavorite.postValue(!currentTrack.isFavorite)
+        }
+    }
+
+    private fun checkIfFavorite() {
+        viewModelScope.launch {
+            val favoriteIds = favouriteInteractor.getAllTracks()
+            favoriteIds.collect { tracks ->
+                _isFavorite.postValue(tracks.any { it.trackId == track.trackId })
+            }
+        }
     }
 
     private fun preparePlayer() {

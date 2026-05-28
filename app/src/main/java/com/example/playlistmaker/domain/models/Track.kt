@@ -11,11 +11,12 @@ data class Track(
     val artistName: String,
     val trackTime: String,
     val artworkUrl100: String,
-    val collectionName: String,      // альбом
-    val releaseDate: String,         // дата релиза
-    val primaryGenreName: String,     // жанр
+    val collectionName: String,
+    val releaseDate: String,
+    val primaryGenreName: String,
     val country: String,
-    val previewUrl: String
+    val previewUrl: String,
+    val isFavorite: Boolean = false
 ): Parcelable {
     fun getCoverArtwork() = artworkUrl100.replaceAfterLast('/',"512x512bb.jpg")
     fun getReleaseYear(): String {
