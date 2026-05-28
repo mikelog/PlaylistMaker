@@ -3,6 +3,7 @@ package com.example.playlistmaker.domain.interactor
 import android.media.MediaPlayer
 import android.os.Handler
 import android.os.Looper
+const val POST_DELAY = 300L
 
 class PlayerInteractorImpl : PlayerInteractor {
 
@@ -19,7 +20,7 @@ class PlayerInteractorImpl : PlayerInteractor {
         override fun run() {
             if (state == PlayerInteractor.State.PLAYING) {
                 mediaPlayer?.currentPosition?.let { onProgressUpdate?.invoke(it) }
-                handler.postDelayed(this, 300L)
+                handler.postDelayed(this, POST_DELAY)
             }
         }
     }
