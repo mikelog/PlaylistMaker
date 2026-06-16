@@ -4,9 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageButton
-import android.widget.ImageView
-import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
@@ -14,7 +11,6 @@ import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.FragmentAudioPlayerBinding
 import com.example.playlistmaker.domain.models.Track
 import com.example.playlistmaker.presentation.audioplayer.AudioPlayerViewModel
-import com.google.android.material.appbar.MaterialToolbar
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
@@ -51,6 +47,7 @@ class AudioPlayerFragment : Fragment() {
         }
 
         binding.buttonPlay.setOnClickListener { viewModel.onPlayPauseClicked() }
+        binding.buttonFavorite.setOnClickListener { viewModel.onFavoriteClicked() }
 
         bindTrack(track)
         observeViewModel()
@@ -64,6 +61,12 @@ class AudioPlayerFragment : Fragment() {
             binding.buttonPlay.isEnabled = state.isPlayEnabled
             binding.buttonPlay.alpha = if (state.isPlayEnabled) 1f else 0.5f
             binding.textProgress.text = state.progress
+        }
+
+        viewModel.isFavorite.observe(viewLifecycleOwner) { isFavorite ->
+            binding.buttonFavorite.setImageResource(
+                if (isFavorite) R.drawable.ic_favorite_active_50 else R.drawable.ic_favorite_50
+            )
         }
     }
 
