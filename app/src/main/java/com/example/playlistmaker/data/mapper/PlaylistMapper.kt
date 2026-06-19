@@ -7,8 +7,10 @@ import com.example.playlistmaker.domain.models.Track
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 
+private val gson = Gson()
+private val trackIdsType = object : TypeToken<List<Long>>() {}.type
+
 fun Playlist.toEntity(): PlaylistEntity {
-    val gson = Gson()
     val trackIdsJson = gson.toJson(trackIds)
     return PlaylistEntity(
         playlistId = playlistId,
@@ -21,8 +23,7 @@ fun Playlist.toEntity(): PlaylistEntity {
 }
 
 fun PlaylistEntity.toPlaylist(): Playlist {
-    val gson = Gson()
-    val type = object : TypeToken<List<Long>>() {}.type
+    val type = trackIdsType
     val ids: List<Long> = try {
         gson.fromJson(trackIds, type) ?: emptyList()
     } catch (e: Exception) {

@@ -9,6 +9,7 @@ import com.example.playlistmaker.domain.interactor.PlaylistInteractor
 import com.example.playlistmaker.domain.models.Playlist
 import com.example.playlistmaker.domain.models.Track
 import com.example.playlistmaker.domain.player.MediaPlayerInteractor
+import com.example.playlistmaker.util.SingleLiveEvent
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
@@ -43,12 +44,8 @@ class AudioPlayerViewModel(
     private val _playlists = MutableLiveData<List<Playlist>>(emptyList())
     val playlists: LiveData<List<Playlist>> = _playlists
 
-    private val _addToPlaylistResult = MutableLiveData<AddToPlaylistResult?>()
-    val addToPlaylistResult: LiveData<AddToPlaylistResult?> = _addToPlaylistResult
-
-    fun consumeAddToPlaylistResult() {
-        _addToPlaylistResult.value = null
-    }
+    private val _addToPlaylistResult = SingleLiveEvent<AddToPlaylistResult>()
+    val addToPlaylistResult: LiveData<AddToPlaylistResult> = _addToPlaylistResult
 
     private var progressJob: Job? = null
 

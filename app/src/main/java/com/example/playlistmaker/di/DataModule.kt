@@ -74,7 +74,8 @@ val dataModule = module {
     }
 
     single<PlaylistRepository> {
-        PlaylistRepositoryImpl(get())
+        val db = get<AppDatabase>()
+        PlaylistRepositoryImpl(db.playlistDao(), db.playlistTrackDao())
     }
 
     single<SettingsRepository> {
