@@ -102,4 +102,12 @@
     <item name="android:fontFamily">@font/ys_display_medium</item>
     <item name="textAllCaps">false</item>
     </style>
+    <style name="NewPlaylistTextInputStyle" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="boxStrokeColor">@color/text_input_stroke</item>
+        <item name="boxStrokeWidth">1dp</item>
+        <item name="boxStrokeWidthFocused">1dp</item>
+        <item name="hintTextColor">@color/white</item>
+        <item name="android:textColorHint">@color/white</item>
+        <item name="boxBackgroundColor">@color/yp_black</item>
+    </style>
 </resources>

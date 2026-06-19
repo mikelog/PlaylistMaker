@@ -7,6 +7,7 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import com.example.playlistmaker.R
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import androidx.fragment.app.FragmentContainerView
 
 class RootActivity : AppCompatActivity() {
 
@@ -19,13 +20,14 @@ class RootActivity : AppCompatActivity() {
         val navController = navHostFragment.navController
 
         val bottomNav = findViewById<BottomNavigationView>(R.id.bottom_navigation)
+        val navHost = findViewById<FragmentContainerView>(R.id.nav_host_fragment)
         bottomNav.setupWithNavController(navController)
 
         navController.addOnDestinationChangedListener { _, destination, _ ->
-            bottomNav.visibility = when (destination.id) {
-                R.id.audioPlayerFragment -> View.GONE
-                else -> View.VISIBLE
-            }
+            val hideBottomNav = destination.id == R.id.audioPlayerFragment
+                    || destination.id == R.id.newPlaylistFragment
+            bottomNav.visibility = if (hideBottomNav) View.GONE else View.VISIBLE
+            navHost.setPadding(0, 0, 0, if (hideBottomNav) 0 else bottomNav.height)
         }
     }
 }

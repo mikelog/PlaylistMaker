@@ -8,4 +8,6 @@
     <color name="teal_200">#FF03DAC5</color>
     <color name="yp_black">#1A1B22</color>
     <color name="yp_gray">#AEAFB4</color>
+    <color name="input_field_bg">#2A2B35</color>
+    <color name="screen_background">@color/yp_black</color>
 </resources>

@@ -42,4 +42,29 @@
     <string name="media_tab_track_title">Новый плейлист</string>
     <string name="media_tab_favourite_tracks_tile">Избранные треки</string>
 
+    <!-- New Playlist screen -->
+    <string name="new_playlist_title">Новый плейлист</string>
+    <string name="playlist_name_hint">Название*</string>
+    <string name="playlist_description_hint">Описание</string>
+    <string name="create_playlist_button">Создать</string>
+    <string name="playlist_created_toast">Плейлист %1$s создан</string>
+
+    <!-- Exit dialog -->
+    <string name="exit_playlist_dialog_title">Завершить создание плейлиста?</string>
+    <string name="exit_playlist_dialog_message">Все несохраненные данные будут потеряны</string>
+    <string name="cancel">Отмена</string>
+    <string name="finish">Завершить</string>
+
+    <!-- Audio player bottom sheet -->
+    <string name="add_to_playlist_title">Добавить в плейлист</string>
+    <string name="added_to_playlist_toast">Добавлено в плейлист «%1$s»</string>
+    <string name="already_in_playlist_toast">Трек уже добавлен в плейлист «%1$s»</string>
+
+    <!-- Plural track count -->
+    <plurals name="track_count">
+        <item quantity="one">%d трек</item>
+        <item quantity="few">%d трека</item>
+        <item quantity="many">%d треков</item>
+        <item quantity="other">%d треков</item>
+    </plurals>
 </resources>

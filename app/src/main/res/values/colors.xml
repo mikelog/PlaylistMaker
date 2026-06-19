@@ -9,4 +9,8 @@
     <color name="yp_black">#1A1B22</color>
     <color name="yp_gray">#AEAFB4</color>
     <color name="yp_gray_light">#E6E8EB</color>
+    <color name="input_field_bg">#FFFFFF</color>
+    <color name="btn_create_enabled">@color/blue_background</color>
+    <color name="screen_background">@color/white</color>
+    <color name="btn_create_text_enabled">#FFFFFF</color>
 </resources>
