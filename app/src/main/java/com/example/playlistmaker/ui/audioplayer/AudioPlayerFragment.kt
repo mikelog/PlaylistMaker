@@ -122,6 +122,7 @@ class AudioPlayerFragment : Fragment() {
         }
 
         viewModel.addToPlaylistResult.observe(viewLifecycleOwner) { result ->
+            result ?: return@observe
             when (result) {
                 is AddToPlaylistResult.Success -> {
                     bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
@@ -131,6 +132,7 @@ class AudioPlayerFragment : Fragment() {
                     showSnackbar(getString(R.string.already_in_playlist_toast, result.playlistName))
                 }
             }
+            viewModel.consumeAddToPlaylistResult()
         }
     }
 

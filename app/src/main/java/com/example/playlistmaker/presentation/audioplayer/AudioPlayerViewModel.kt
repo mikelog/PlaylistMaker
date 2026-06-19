@@ -43,8 +43,12 @@ class AudioPlayerViewModel(
     private val _playlists = MutableLiveData<List<Playlist>>(emptyList())
     val playlists: LiveData<List<Playlist>> = _playlists
 
-    private val _addToPlaylistResult = MutableLiveData<AddToPlaylistResult>()
-    val addToPlaylistResult: LiveData<AddToPlaylistResult> = _addToPlaylistResult
+    private val _addToPlaylistResult = MutableLiveData<AddToPlaylistResult?>()
+    val addToPlaylistResult: LiveData<AddToPlaylistResult?> = _addToPlaylistResult
+
+    fun consumeAddToPlaylistResult() {
+        _addToPlaylistResult.value = null
+    }
 
     private var progressJob: Job? = null
 
