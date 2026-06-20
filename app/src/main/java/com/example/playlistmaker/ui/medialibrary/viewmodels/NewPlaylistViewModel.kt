@@ -14,15 +14,15 @@ import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileOutputStream
 
-class NewPlaylistViewModel(
-    private val playlistInteractor: PlaylistInteractor,
-    private val context: Context
+open class NewPlaylistViewModel(
+    protected val playlistInteractor: PlaylistInteractor,
+    protected val context: Context
 ) : ViewModel() {
 
-    private val _coverUri = MutableLiveData<Uri?>(null)
+    protected val _coverUri = MutableLiveData<Uri?>(null)
     val coverUri: LiveData<Uri?> = _coverUri
 
-    private val _playlistCreated = MutableLiveData<String>()
+    protected val _playlistCreated = MutableLiveData<String>()
     val playlistCreated: LiveData<String> = _playlistCreated
 
     fun onCoverSelected(uri: Uri) {
@@ -44,7 +44,7 @@ class NewPlaylistViewModel(
         }
     }
 
-    private fun saveCoverToPrivateStorage(uri: Uri): String {
+    protected fun saveCoverToPrivateStorage(uri: Uri): String {
         val dir = File(context.filesDir, "playlist_covers")
         if (!dir.exists()) dir.mkdirs()
         val file = File(dir, "cover_${System.currentTimeMillis()}.jpg")

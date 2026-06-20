@@ -1,6 +1,7 @@
 package com.example.playlistmaker.di
 
 import android.content.Context
+import com.example.playlistmaker.ui.medialibrary.viewmodels.EditPlaylistViewModel
 import com.example.playlistmaker.ui.medialibrary.viewmodels.FavouriteTracksViewModel
 import com.example.playlistmaker.ui.medialibrary.viewmodels.MediaLibraryViewModel
 import com.example.playlistmaker.ui.medialibrary.viewmodels.NewPlaylistViewModel
@@ -14,4 +15,5 @@ val mediaLibraryModule = module {
     viewModel { FavouriteTracksViewModel(get()) }
     viewModel { PlaylistsViewModel(get()) }
     viewModel { NewPlaylistViewModel(get(), androidContext()) }
+    viewModel { (playlistId: Long) -> EditPlaylistViewModel(playlistId, get(), androidContext()) }
 }
