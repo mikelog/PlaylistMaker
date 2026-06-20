@@ -10,6 +10,7 @@ import com.example.playlistmaker.domain.models.Playlist
 import com.example.playlistmaker.domain.models.Track
 import com.example.playlistmaker.domain.repository.PlaylistRepository
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
@@ -34,7 +35,7 @@ class PlaylistRepositoryImpl(
     }
 
     override fun getPlaylistById(id: Long): Flow<Playlist> {
-        return playlistDao.getPlaylistById(id).mapNotNull { it?.toPlaylist() }
+        return playlistDao.getPlaylistById(id).mapNotNull { it?.toPlaylist() }.distinctUntilChanged()
     }
 
     override fun getTracksForPlaylist(trackIds: List<Long>): Flow<List<Track>> = flow {
@@ -55,6 +56,7 @@ class PlaylistRepositoryImpl(
         }
     }
 
+    @androidx.room.Transaction
     override suspend fun deletePlaylist(playlist: Playlist) {
         playlistDao.deletePlaylist(playlist.playlistId)
         playlist.trackIds.forEach { trackId ->

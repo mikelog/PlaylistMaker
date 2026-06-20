@@ -1,9 +1,11 @@
 package com.example.playlistmaker.ui.medialibrary.viewmodels
 
+import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.playlistmaker.R
 import com.example.playlistmaker.domain.interactor.PlaylistInteractor
 import com.example.playlistmaker.domain.models.Playlist
 import com.example.playlistmaker.domain.models.Track
@@ -14,7 +16,8 @@ import java.util.Locale
 
 class PlaylistDetailViewModel(
     private val playlistId: Long,
-    private val playlistInteractor: PlaylistInteractor
+    private val playlistInteractor: PlaylistInteractor,
+    private val context: Context
 ) : ViewModel() {
 
     private val _playlist = MutableLiveData<Playlist>()
@@ -64,7 +67,7 @@ class PlaylistDetailViewModel(
         val sb = StringBuilder()
         sb.appendLine(playlist.name)
         if (playlist.description.isNotBlank()) sb.appendLine(playlist.description)
-        sb.appendLine("${tracks.size} треков")
+        sb.appendLine(context.resources.getQuantityString(R.plurals.track_count, tracks.size, tracks.size))
         tracks.forEachIndexed { index, track ->
             sb.appendLine("${index + 1}. ${track.artistName} - ${track.trackName} (${track.trackTime})")
         }
