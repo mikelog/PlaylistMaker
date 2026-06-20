@@ -39,6 +39,19 @@ fun PlaylistEntity.toPlaylist(): Playlist {
     )
 }
 
+fun PlaylistTrackEntity.toTrack(): Track = Track(
+    trackId = trackId,
+    artworkUrl100 = artworkUrl100,
+    trackName = trackName,
+    artistName = artistName,
+    collectionName = collectionName,
+    releaseDate = releaseDate,
+    primaryGenreName = primaryGenreName,
+    country = country,
+    trackTime = trackTime,
+    previewUrl = previewUrl
+)
+
 fun Track.toPlaylistTrackEntity(): PlaylistTrackEntity = PlaylistTrackEntity(
     trackId = trackId,
     artworkUrl100 = artworkUrl100,

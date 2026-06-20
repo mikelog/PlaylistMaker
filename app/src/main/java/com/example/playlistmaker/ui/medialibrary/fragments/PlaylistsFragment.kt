@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.FragmentPlaylistsBinding
 import com.example.playlistmaker.ui.medialibrary.adapters.PlaylistAdapter
+import com.example.playlistmaker.ui.medialibrary.fragments.PlaylistDetailFragment
 import com.example.playlistmaker.ui.medialibrary.viewmodels.PlaylistsViewModel
 import com.google.android.material.snackbar.Snackbar
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -25,7 +26,12 @@ class PlaylistsFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val viewModel by viewModel<PlaylistsViewModel>()
-    private val adapter = PlaylistAdapter()
+    private val adapter = PlaylistAdapter { playlist ->
+        findNavController().navigate(
+            R.id.action_mediaLibraryFragment_to_playlistDetailFragment,
+            PlaylistDetailFragment.createArgs(playlist.playlistId)
+        )
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,

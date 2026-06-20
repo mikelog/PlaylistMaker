@@ -20,12 +20,12 @@ import com.example.playlistmaker.ui.medialibrary.viewmodels.NewPlaylistViewModel
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class NewPlaylistFragment : Fragment() {
+open class NewPlaylistFragment : Fragment() {
 
-    private var _binding: FragmentNewPlaylistBinding? = null
-    private val binding get() = _binding!!
+    protected var _binding: FragmentNewPlaylistBinding? = null
+    protected val binding get() = _binding!!
 
-    val viewModel by viewModel<NewPlaylistViewModel>()
+    open val viewModel: NewPlaylistViewModel by viewModel()
 
     private val photoPicker = registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
         if (uri != null) {
@@ -96,7 +96,7 @@ class NewPlaylistFragment : Fragment() {
             || viewModel.coverUri.value != null
     }
 
-    private fun handleBackPress() {
+    protected open fun handleBackPress() {
         if (hasUnsavedData()) {
             showExitDialog()
         } else {

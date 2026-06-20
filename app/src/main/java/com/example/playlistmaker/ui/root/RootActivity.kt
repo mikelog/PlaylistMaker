@@ -26,6 +26,8 @@ class RootActivity : AppCompatActivity() {
         navController.addOnDestinationChangedListener { _, destination, _ ->
             val hideBottomNav = destination.id == R.id.audioPlayerFragment
                     || destination.id == R.id.newPlaylistFragment
+                    || destination.id == R.id.playlistDetailFragment
+                    || destination.id == R.id.editPlaylistFragment
             bottomNav.visibility = if (hideBottomNav) View.GONE else View.VISIBLE
             navHost.setPadding(0, 0, 0, if (hideBottomNav) 0 else bottomNav.height)
         }
