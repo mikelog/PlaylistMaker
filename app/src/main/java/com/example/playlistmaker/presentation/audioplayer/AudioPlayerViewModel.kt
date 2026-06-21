@@ -10,6 +10,7 @@ import com.example.playlistmaker.domain.models.Playlist
 import com.example.playlistmaker.domain.models.Track
 import com.example.playlistmaker.domain.player.MediaPlayerInteractor
 import com.example.playlistmaker.util.SingleLiveEvent
+import com.google.firebase.analytics.FirebaseAnalytics
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
@@ -26,7 +27,8 @@ class AudioPlayerViewModel(
     private val track: Track,
     private val playerInteractor: MediaPlayerInteractor,
     private val favouriteInteractor: FavouriteTracksInteractor,
-    private val playlistInteractor: PlaylistInteractor
+    private val playlistInteractor: PlaylistInteractor,
+    private val analytics: FirebaseAnalytics
 ) : ViewModel() {
 
     data class PlayerScreenState(
@@ -88,6 +90,14 @@ class AudioPlayerViewModel(
                 favouriteInteractor.deleteTrack(currentTrack)
             } else {
                 favouriteInteractor.addTrack(currentTrack)
+                val bundle = android.os.Bundle().apply {
+                    putString(FirebaseAnalytics.Param.ITEM_ID, track.trackId.toString())
+                    putString(FirebaseAnalytics.Param.ITEM_NAME, track.trackName)
+                    putString(FirebaseAnalytics.Param.ITEM_BRAND, track.artistName)
+                    putString("album", track.collectionName)
+                    putString("duration", track.trackTime)
+                }
+                analytics.logEvent("add_to_favourite", bundle)
             }
             _isFavorite.postValue(!currentTrack.isFavorite)
         }
