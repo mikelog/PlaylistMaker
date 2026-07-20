@@ -103,9 +103,7 @@ class AudioPlayerFragment : Fragment() {
 
     private fun observeViewModel() {
         viewModel.screenState.observe(viewLifecycleOwner) { state ->
-            binding.buttonPlay.setImageResource(
-                if (state.isPlaying) R.drawable.ic_pause_100 else R.drawable.ic_play_100
-            )
+            binding.buttonPlay.setPlayingState(state.isPlaying)
             binding.buttonPlay.isEnabled = state.isPlayEnabled
             binding.buttonPlay.alpha = if (state.isPlayEnabled) 1f else 0.5f
             binding.textProgress.text = state.progress
