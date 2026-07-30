@@ -79,15 +79,15 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="@id/artistName" />
 
-            <ImageButton
+            <com.example.playlistmaker.ui.audioplayer.PlaybackButtonView
                 android:id="@+id/buttonPlay"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
                 android:layout_marginStart="@dimen/margin_56"
                 android:layout_marginEnd="@dimen/margin_56"
                 android:layout_marginTop="@dimen/margin_30"
-                android:background="@null"
-                android:src="@drawable/ic_play_100"
+                app:playImage="@drawable/ic_play_100"
+                app:pauseImage="@drawable/ic_pause_100"
                 app:layout_constraintEnd_toStartOf="@id/buttonFavorite"
                 app:layout_constraintStart_toEndOf="@id/buttonAddPlaylist"
                 app:layout_constraintTop_toTopOf="@id/artistName" />
