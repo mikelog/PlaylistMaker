@@ -27,6 +27,7 @@ import com.example.playlistmaker.R
 import com.example.playlistmaker.data.player.service.PlayerPlaybackService
 import com.example.playlistmaker.databinding.FragmentAudioPlayerBinding
 import com.example.playlistmaker.domain.models.Track
+import com.example.playlistmaker.domain.player.PlaybackTrackInfo
 import com.example.playlistmaker.presentation.audioplayer.AddToPlaylistResult
 import com.example.playlistmaker.presentation.audioplayer.AudioPlayerViewModel
 import com.example.playlistmaker.ui.medialibrary.adapters.BottomSheetPlaylistAdapter
@@ -104,10 +105,13 @@ class AudioPlayerFragment : Fragment() {
     }
 
     private fun bindPlayerService() {
+        val trackInfo = PlaybackTrackInfo(
+            previewUrl = track.previewUrl,
+            trackName = track.trackName,
+            artistName = track.artistName
+        )
         val intent = Intent(requireContext(), PlayerPlaybackService::class.java).apply {
-            putExtra(PlayerPlaybackService.EXTRA_TRACK_URL, track.previewUrl)
-            putExtra(PlayerPlaybackService.EXTRA_TRACK_NAME, track.trackName)
-            putExtra(PlayerPlaybackService.EXTRA_ARTIST_NAME, track.artistName)
+            putExtra(PlayerPlaybackService.EXTRA_TRACK_INFO, trackInfo)
         }
         requireContext().bindService(intent, playerServiceConnection, Context.BIND_AUTO_CREATE)
     }

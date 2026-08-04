@@ -11,8 +11,10 @@ import android.os.Binder
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
 import androidx.core.app.ServiceCompat
+import androidx.core.content.IntentCompat
 import com.example.playlistmaker.R
 import com.example.playlistmaker.domain.player.MediaPlayerRepository
+import com.example.playlistmaker.domain.player.PlaybackTrackInfo
 import com.example.playlistmaker.domain.player.PlayerServiceInterface
 import com.example.playlistmaker.domain.player.PlayerState
 import com.example.playlistmaker.ui.root.RootActivity
@@ -25,6 +27,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
@@ -39,9 +42,7 @@ class PlayerPlaybackService : Service(), PlayerServiceInterface, KoinComponent {
 
     private val _playerState = MutableStateFlow(PlayerState())
 
-    private var trackUrl: String = ""
-    private var trackName: String = ""
-    private var artistName: String = ""
+    private var trackInfo: PlaybackTrackInfo? = null
 
     inner class LocalBinder : Binder() {
         fun getService(): PlayerPlaybackService = this@PlayerPlaybackService
@@ -55,9 +56,9 @@ class PlayerPlaybackService : Service(), PlayerServiceInterface, KoinComponent {
     }
 
     override fun onBind(intent: Intent?): IBinder {
-        trackUrl = intent?.getStringExtra(EXTRA_TRACK_URL).orEmpty()
-        trackName = intent?.getStringExtra(EXTRA_TRACK_NAME).orEmpty()
-        artistName = intent?.getStringExtra(EXTRA_ARTIST_NAME).orEmpty()
+        trackInfo = intent?.let {
+            IntentCompat.getParcelableExtra(it, EXTRA_TRACK_INFO, PlaybackTrackInfo::class.java)
+        }
         preparePlayer()
         return binder
     }
@@ -85,18 +86,19 @@ class PlayerPlaybackService : Service(), PlayerServiceInterface, KoinComponent {
     }
 
     private fun preparePlayer() {
-        if (trackUrl.isBlank()) {
-            _playerState.value = PlayerState(isPlayEnabled = false)
+        val url = trackInfo?.previewUrl
+        if (url.isNullOrBlank()) {
+            _playerState.update { PlayerState(isPlayEnabled = false) }
             return
         }
         mediaPlayerRepository.prepare(
-            url = trackUrl,
+            url = url,
             onPrepared = {
-                _playerState.value = _playerState.value.copy(isPlayEnabled = true)
+                _playerState.update { it.copy(isPlayEnabled = true) }
             },
             onCompletion = {
                 progressJob?.cancel()
-                _playerState.value = PlayerState(isPlaying = false, isPlayEnabled = true, progressMs = 0)
+                _playerState.update { PlayerState(isPlaying = false, isPlayEnabled = true, progressMs = 0) }
                 stopForegroundNotification()
             }
         )
@@ -106,23 +108,21 @@ class PlayerPlaybackService : Service(), PlayerServiceInterface, KoinComponent {
 
     override fun play() {
         mediaPlayerRepository.play()
-        _playerState.value = _playerState.value.copy(isPlaying = true)
+        _playerState.update { it.copy(isPlaying = true) }
         startProgressUpdates()
     }
 
     override fun pause() {
         mediaPlayerRepository.pause()
         progressJob?.cancel()
-        _playerState.value = _playerState.value.copy(isPlaying = false)
+        _playerState.update { it.copy(isPlaying = false) }
     }
 
     private fun startProgressUpdates() {
         progressJob?.cancel()
         progressJob = serviceScope.launch {
             while (isActive) {
-                _playerState.value = _playerState.value.copy(
-                    progressMs = mediaPlayerRepository.getCurrentPosition()
-                )
+                _playerState.update { it.copy(progressMs = mediaPlayerRepository.getCurrentPosition()) }
                 delay(PROGRESS_UPDATE_DELAY_MS)
             }
         }
@@ -152,7 +152,13 @@ class PlayerPlaybackService : Service(), PlayerServiceInterface, KoinComponent {
         return NotificationCompat.Builder(this, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_play_100)
             .setContentTitle(getString(R.string.player_notification_title))
-            .setContentText(getString(R.string.player_notification_text, artistName, trackName))
+            .setContentText(
+                getString(
+                    R.string.player_notification_text,
+                    trackInfo?.artistName.orEmpty(),
+                    trackInfo?.trackName.orEmpty()
+                )
+            )
             .setContentIntent(contentIntent)
             .setOngoing(true)
             .setPriority(NotificationCompat.PRIORITY_LOW)
@@ -169,9 +175,7 @@ class PlayerPlaybackService : Service(), PlayerServiceInterface, KoinComponent {
     }
 
     companion object {
-        const val EXTRA_TRACK_URL = "extra_track_url"
-        const val EXTRA_TRACK_NAME = "extra_track_name"
-        const val EXTRA_ARTIST_NAME = "extra_artist_name"
+        const val EXTRA_TRACK_INFO = "extra_track_info"
         private const val CHANNEL_ID = "player_playback_channel"
         private const val NOTIFICATION_ID = 100
         private const val PROGRESS_UPDATE_DELAY_MS = 300L
