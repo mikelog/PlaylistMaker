@@ -8,11 +8,9 @@ import com.example.playlistmaker.domain.interactor.FavouriteTracksInteractor
 import com.example.playlistmaker.domain.interactor.PlaylistInteractor
 import com.example.playlistmaker.domain.models.Playlist
 import com.example.playlistmaker.domain.models.Track
-import com.example.playlistmaker.domain.player.MediaPlayerInteractor
+import com.example.playlistmaker.domain.player.PlayerServiceInterface
 import com.example.playlistmaker.util.SingleLiveEvent
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -24,7 +22,6 @@ sealed class AddToPlaylistResult {
 
 class AudioPlayerViewModel(
     private val track: Track,
-    private val playerInteractor: MediaPlayerInteractor,
     private val favouriteInteractor: FavouriteTracksInteractor,
     private val playlistInteractor: PlaylistInteractor
 ) : ViewModel() {
@@ -47,11 +44,31 @@ class AudioPlayerViewModel(
     private val _addToPlaylistResult = SingleLiveEvent<AddToPlaylistResult>()
     val addToPlaylistResult: LiveData<AddToPlaylistResult> = _addToPlaylistResult
 
-    private var progressJob: Job? = null
+    private var playerService: PlayerServiceInterface? = null
+    private var stateObserverJob: Job? = null
 
     init {
-        preparePlayer()
         checkIfFavorite()
+    }
+
+    fun onServiceConnected(service: PlayerServiceInterface) {
+        playerService = service
+        stateObserverJob?.cancel()
+        stateObserverJob = viewModelScope.launch {
+            service.getPlayerState().collect { state ->
+                _screenState.value = PlayerScreenState(
+                    isPlaying = state.isPlaying,
+                    isPlayEnabled = state.isPlayEnabled,
+                    progress = formatTime(state.progressMs)
+                )
+            }
+        }
+    }
+
+    fun onServiceDisconnected() {
+        stateObserverJob?.cancel()
+        stateObserverJob = null
+        playerService = null
     }
 
     fun loadPlaylists() {
@@ -74,11 +91,19 @@ class AudioPlayerViewModel(
     }
 
     fun onPlayPauseClicked() {
-        if (playerInteractor.isPlaying()) pause() else play()
+        val service = playerService ?: return
+        if (service.getPlayerState().value.isPlaying) service.pause() else service.play()
     }
 
-    fun onActivityPaused() {
-        pause()
+    fun onScreenBackgrounded() {
+        val service = playerService ?: return
+        if (service.getPlayerState().value.isPlaying) {
+            service.startForegroundNotification()
+        }
+    }
+
+    fun onScreenForegrounded() {
+        playerService?.stopForegroundNotification()
     }
 
     fun onFavoriteClicked() {
@@ -102,62 +127,11 @@ class AudioPlayerViewModel(
         }
     }
 
-    private fun preparePlayer() {
-        val url = track.previewUrl
-        if (url.isBlank()) {
-            _screenState.value = PlayerScreenState(isPlayEnabled = false)
-            return
-        }
-        playerInteractor.prepare(
-            url = url,
-            onPrepared = {
-                _screenState.value = _screenState.value?.copy(isPlayEnabled = true)
-            },
-            onCompletion = {
-                stopProgressUpdates()
-                _screenState.value = PlayerScreenState(
-                    isPlaying = false,
-                    isPlayEnabled = true,
-                    progress = "00:00"
-                )
-            }
-        )
-    }
-
-    private fun play() {
-        playerInteractor.play()
-        _screenState.value = _screenState.value?.copy(isPlaying = true)
-        startProgressUpdates()
-    }
-
-    private fun pause() {
-        playerInteractor.pause()
-        stopProgressUpdates()
-        _screenState.value = _screenState.value?.copy(isPlaying = false)
-    }
-
-    private fun startProgressUpdates() {
-        progressJob?.cancel()
-        progressJob = viewModelScope.launch {
-            while (isActive) {
-                _screenState.value = _screenState.value?.copy(
-                    progress = formatTime(playerInteractor.getCurrentPosition())
-                )
-                delay(300L)
-            }
-        }
-    }
-
-    private fun stopProgressUpdates() {
-        progressJob?.cancel()
-        progressJob = null
-    }
-
     private fun formatTime(ms: Int): String =
         SimpleDateFormat("mm:ss", Locale.getDefault()).format(ms)
 
     override fun onCleared() {
         super.onCleared()
-        playerInteractor.release()
+        stateObserverJob?.cancel()
     }
 }
