@@ -21,7 +21,6 @@ val viewModelModule = module {
     viewModel { (track: Track) ->
         AudioPlayerViewModel(
             track = track,
-            playerInteractor = get(),
             favouriteInteractor = get(),
             playlistInteractor = get()
         )

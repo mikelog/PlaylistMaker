@@ -4,6 +4,9 @@
     <string name="library">Медиатека</string>
     <string name="settings">Настройки</string>
     <string name="player">Аудиоплеер</string>
+    <string name="player_notification_title">Playlist Maker</string>
+    <string name="player_notification_channel_name">Воспроизведение трека</string>
+    <string name="player_notification_text">%1$s - %2$s</string>
     <string name="dark_theme">Тёмная тема</string>
     <string name="share_app">Поделиться приложением</string>
     <string name="support">Написать в поддержку</string>
