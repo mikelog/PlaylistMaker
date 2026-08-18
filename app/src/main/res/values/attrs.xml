@@ -2,9 +2,4 @@
 <resources>
     <attr name="search_hint_color" format="color" />
     <attr name="yp_gray_color" format="color" />
-
-    <declare-styleable name="PlaybackButtonView">
-        <attr name="playImage" format="reference" />
-        <attr name="pauseImage" format="reference" />
-    </declare-styleable>
 </resources>
