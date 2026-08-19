@@ -32,10 +32,7 @@ import com.example.playlistmaker.ui.theme.colorAttr
 
 @Composable
 fun SettingsScreen(
-    viewModel: SettingsViewModel,
-    onShareApp: () -> Unit,
-    onOpenSupport: () -> Unit,
-    onOpenTerms: () -> Unit
+    viewModel: SettingsViewModel
 ) {
     val state by viewModel.screenState.observeAsState()
     val screenState = state ?: return
@@ -87,19 +84,19 @@ fun SettingsScreen(
                 text = stringResource(R.string.share_app),
                 iconRes = R.drawable.ic_share_24,
                 textColor = textColor,
-                onClick = onShareApp
+                onClick = { viewModel.onShareAppClicked() }
             )
             SettingsRow(
                 text = stringResource(R.string.support),
                 iconRes = R.drawable.ic_support_24,
                 textColor = textColor,
-                onClick = onOpenSupport
+                onClick = { viewModel.onOpenSupportClicked() }
             )
             SettingsRow(
                 text = stringResource(R.string.user_agreement),
                 iconRes = R.drawable.ic_arrow_right_24,
                 textColor = textColor,
-                onClick = onOpenTerms
+                onClick = { viewModel.onOpenTermsClicked() }
             )
         }
     }

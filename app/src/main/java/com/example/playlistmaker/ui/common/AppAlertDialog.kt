@@ -3,8 +3,8 @@ package com.example.playlistmaker.ui.common
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.example.playlistmaker.ui.theme.AppColors
 
 /**
  * Matches the app's ThemeOverlay.PlaylistMaker.Dialog: dialogs always render on a plain white
@@ -25,9 +25,9 @@ fun AppAlertDialog(
         text = text,
         confirmButton = confirmButton,
         dismissButton = dismissButton,
-        containerColor = Color.White,
-        titleContentColor = Color(0xFF1A1B22),
-        textContentColor = Color(0xFF1A1B22),
+        containerColor = AppColors.DialogContainer,
+        titleContentColor = AppColors.DialogContent,
+        textContentColor = AppColors.DialogContent,
         shape = RoundedCornerShape(4.dp)
     )
 }

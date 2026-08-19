@@ -8,10 +8,5 @@ import org.koin.androidx.compose.koinViewModel
 fun SettingsRoute() {
     val viewModel: SettingsViewModel = koinViewModel()
 
-    SettingsScreen(
-        viewModel = viewModel,
-        onShareApp = { viewModel.onShareAppClicked() },
-        onOpenSupport = { viewModel.onOpenSupportClicked() },
-        onOpenTerms = { viewModel.onOpenTermsClicked() }
-    )
+    SettingsScreen(viewModel = viewModel)
 }
