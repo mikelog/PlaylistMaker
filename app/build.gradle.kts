@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.compose)
     id("kotlin-parcelize")
     id("kotlin-kapt")
 }
@@ -20,7 +21,7 @@ android {
     }
 
     buildFeatures {
-        viewBinding = true
+        compose = true
     }
 
     buildTypes {
@@ -46,8 +47,7 @@ android {
 
 dependencies {
     //Navigator
-    implementation(libs.navigation.fragment)
-    implementation(libs.navigation.ui)
+    implementation(libs.navigation.compose)
     // Networking
     implementation(libs.retrofit)
     implementation(libs.retrofit.converter.gson)
@@ -56,17 +56,27 @@ dependencies {
     implementation(libs.glide)
     // DI - Koin
     implementation(libs.koin.android)
-    implementation(libs.koin.androidx.navigation)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
     implementation(libs.androidx.activity)
-    implementation(libs.androidx.constraintlayout)
     // Room
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
     kapt(libs.room.compiler)
+
+    // Compose
+    implementation(platform(libs.compose.bom))
+    implementation(libs.compose.ui)
+    implementation(libs.compose.ui.graphics)
+    implementation(libs.compose.ui.tooling.preview)
+    debugImplementation(libs.compose.ui.tooling)
+    implementation(libs.compose.material3)
+    implementation(libs.compose.runtime.livedata)
+    implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.lifecycle.runtime.compose)
+    implementation(libs.koin.androidx.compose)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
